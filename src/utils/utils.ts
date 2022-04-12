@@ -60,7 +60,7 @@ export const colorNoise = (
   agent: AgentType,
   canvas: CanvasSettings
 ) => {
-  let noise = p5.noise(0.0005 * agent.position.x, 0.0005 * agent.position.y);
+  const noise = p5.noise(0.0005 * agent.position.x, 0.0005 * agent.position.y);
   const color = rgbToP5Color(
     p5,
     COLOR_PALETTE[Math.floor(noise * COLOR_PALETTE.length)]

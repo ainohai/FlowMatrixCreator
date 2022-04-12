@@ -43,6 +43,7 @@ const getScheme = (): Rgb[] => {
 
 //default configurations
 export const config = {
+
   //In execution order.
   //In future it would be nice to let user decide from UI if they want to draw helpers or not.
   USED_STATES: [
@@ -65,7 +66,8 @@ export const config = {
 
   NUM_OF_MAGNETS: 4,
   MAGNET_STRENGTH_MAX: 30,
-  FORCE_MULTIPLIER: 10, //Multiplier constant. Similar to G in gravity calculations.
+  //Multiplier constant. Similar to G in gravity calculations.
+  FORCE_MULTIPLIER: 10,
 
   MAX_STROKE: 5,
   DEFAULT_LIFESPAN: 25,

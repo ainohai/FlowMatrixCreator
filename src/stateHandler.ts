@@ -63,7 +63,6 @@ export function stateHandler(p5: p5) {
     magnets: MagnetPoint[]
   ) => {
     let living = agents.filter((agent) => agent.isAlive);
-    //If all old agents are dead, new agents burst.
     if (living.length < MIN_AGENTS && agentBurst < TOTAL_BURSTS) {
       agentBurst++;
 

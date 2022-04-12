@@ -7,9 +7,6 @@ import { CanvasSettings } from '../stateHandler';
 import { addOffset } from '../utils/mathUtils';
 import {
   colorByVelocity,
-  colorByXPos,
-  colorNoise,
-  getRandomColor,
 } from '../utils/utils';
 import { MagnetPoint } from './MagnetPoint';
 
@@ -31,7 +28,8 @@ export type AgentType = {
   lifespanInFrames: number;
   color: Color | ((p5: p5, agent: AgentType, canvas: CanvasSettings) => Color);
   strokeWidth: number;
-  previousPos: Vector; //TODO: Do we really want/need this at all.
+  //Todo: Do we really want/need this at all.
+  previousPos: Vector;
   acceleration?: Vector;
   isAlive: boolean;
 };
@@ -40,7 +38,7 @@ const getDefaultSettings = (p5: p5) => ({
   lifespanInFrames: DEFAULT_LIFESPAN,
   color: (p5: p5, agent: AgentType, canvas: CanvasSettings) =>
     //Todo: Should be given in config.
-    colorByVelocity(p5, agent, canvas), //colorNoise(p5, agent, canvas), //colorByXPos(p5, agent, canvas), //getRandomColor(p5, agent),
+    colorByVelocity(p5, agent, canvas),
   strokeWidth: p5.random(0, MAX_STROKE),
   acceleration: p5.createVector(0, 0),
   isAlive: true,

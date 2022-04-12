@@ -41,7 +41,7 @@ export const sketch = function (p5: p5) {
 
   let state: State = handler.initialState({
     //todo: solve why p5 gives faulty values for width & height
-    width: document.getElementsByTagName('body')[0].clientWidth,
+    width: p5.windowWidth,
     height: p5.windowHeight,
     color: BACKGROUND_COLOR,
   });
@@ -55,7 +55,7 @@ export const sketch = function (p5: p5) {
   p5.draw = () => {
     const { grid, agents, stateIndex, canvas, magnets } = state;
 
-    //Some other solution?
+    //todo: Some other solution?
     let nextStage: boolean | undefined;
     switch (USED_STATES[stateIndex]) {
       case StateOfArt.DRAW_GRID:
