@@ -9,6 +9,9 @@ import { rgbToP5Color } from './utils';
 
 const { HELPER_GRID_SIZE, COLOR_PALETTE, MAGNET_STRENGTH_MAX } = config;
 
+/**
+ * Draws horizontal and vertical lines.
+ */
 export const drawHelpGrid = (p5: p5, canvas: CanvasSettings) => {
   for (let i = 0; i < canvas.width; i += HELPER_GRID_SIZE) {
     p5.line(i, 0, i, canvas.height);
@@ -58,15 +61,10 @@ export const drawGridCellContents = (
   const velocity = grid.gridValues[column][row].velocity;
   p5.line(locationX, locationY, locationX + velocity.x, locationY + velocity.y);
 
-  //draw palette
-  for (let i = 0; i < COLOR_PALETTE.length; i++) {
-    p5.fill(rgbToP5Color(p5, COLOR_PALETTE[i]));
-    p5.circle(10 + i * 10, 10, 10);
-  }
 };
 
 /**
- * Draws horizontal & vertical helper lines
+ * Draws strength and direction of matrix.
  */
 export function* drawHelperMatrix(grid: GridType, p5: p5) {
   const gridValues = grid.gridValues;
@@ -76,6 +74,11 @@ export function* drawHelperMatrix(grid: GridType, p5: p5) {
       drawGridCellContents(grid, row, column, p5);
     }
     yield;
+  }
+  //draw palette
+  for (let i = 0; i < COLOR_PALETTE.length; i++) {
+    p5.fill(rgbToP5Color(p5, COLOR_PALETTE[i]));
+    p5.circle(10 + i * 10, 10, 10);
   }
 }
 

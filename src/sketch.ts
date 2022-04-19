@@ -5,7 +5,7 @@ import { config, StateOfArt } from './config';
 
 /**TODO:
  * 1. FIX: When agent is created to max value, grid point is not found when agent is moved => error.
- * 2. Better separation of generic code for reuse and artsy, unclean test code.
+ * 2. Better separation of generic code for reuse and artsy, unclean test code. Get rid of p5js?
  * 3. Lazy calculation of force grid.
  * 4. Add barriers. Current ideas:
  *     - check how flocking/boid examples work.
@@ -17,11 +17,12 @@ import { config, StateOfArt } from './config';
  *     - do agents affect each others (aka. are we talking about fluid or particles without mass)?
  *     - should barrier block also magnets? (Probably better to simplify first)
  * 5. Configs can set from UI? Configs are stored nicely.
- * 6. Consider if browser performance is enough. (Check Nannou, p5 nodejs port)
+ * 6. Consider if browser performance is enough. (Check Nannou, p5 nodejs port, canvas vs webgl)
  * 7. Add offset for agents => they would be not drawn perfectly on their agent.position, but on their offset position.
  * 8. Magnet points:
  *      - could move or be recalculated
  *      - Magnets could be just one kind of agent with extra properties.
+ *      - Entities to classes?
  * 9. Shake the grid.
  * 10. General cleanup & refactoring.
  * 11. Make it art.

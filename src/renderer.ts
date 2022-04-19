@@ -13,10 +13,10 @@ import { MagnetPoint } from './entities/MagnetPoint';
 
 const { BACKGROUND_COLOR, FADING } = config;
 
-export function renderer(p5: p5) {
+export const renderer = function(p5: p5) {
   let drawingGenerator: Generator<void, void, unknown>;
 
-  function canvas({ width, height, color = BACKGROUND_COLOR }: CanvasSettings) {
+  const canvas = function ({ width, height, color = BACKGROUND_COLOR }: CanvasSettings) {
     p5.createCanvas(width, height);
     p5.background(color.r, color.g, color.b);
   }
@@ -24,14 +24,14 @@ export function renderer(p5: p5) {
   /**
    * @return true, if the grid is fully drawn.
    */
-  function grid(grid: GridType) {
+  const grid = function(grid: GridType) {
     if (!drawingGenerator) {
       drawingGenerator = drawHelperMatrix(grid, p5);
     }
     const val = drawingGenerator.next();
     return val.done;
   }
-  function agents(agents: AgentType[], canvas: CanvasSettings) {
+  const agents = function(agents: AgentType[], canvas: CanvasSettings) {
     //Fades also grid
     p5.background(canvas.color.r, canvas.color.g, canvas.color.b, FADING);
 
@@ -40,11 +40,11 @@ export function renderer(p5: p5) {
     }
   }
 
-  function helperLines(canvas: CanvasSettings) {
+  const helperLines = function (canvas: CanvasSettings) {
     drawHelpGrid(p5, canvas);
   }
 
-  function magnetPoints(magnetPoints: MagnetPoint[]) {
+  const magnetPoints = function(magnetPoints: MagnetPoint[]) {
     drawMagnetPoints(p5, magnetPoints);
   }
 

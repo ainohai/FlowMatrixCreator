@@ -31,10 +31,10 @@ export type CanvasSettings = {
   color?: Rgb;
 };
 
-export function stateHandler(p5: p5) {
+export const stateHandler = function(p5: p5) {
   let agentBurst = 0;
 
-  function initialState(canvasSettings: CanvasSettings): State {
+  const initialState = function (canvasSettings: CanvasSettings): State {
     const { width, height } = canvasSettings;
 
     const grid = gridFactory(width, height);
@@ -62,17 +62,17 @@ export function stateHandler(p5: p5) {
     grid: GridType,
     magnets: MagnetPoint[]
   ) => {
-    let living = agents.filter((agent) => agent.isAlive);
+    const living = agents.filter((agent) => agent.isAlive);
     if (living.length < MIN_AGENTS && agentBurst < TOTAL_BURSTS) {
       agentBurst++;
 
-      let startingPoints = getCreators(magnets);
+      const startingPoints = getCreators(magnets);
       living.push(...createDummyAgents(p5, startingPoints, canvas));
     }
     return living;
   };
 
-  function updateAgents(state: State): AgentType[] {
+  const updateAgents = function(state: State): AgentType[] {
     const { agents, grid, canvas, magnets } = state;
     for (let agent of agents) {
       moveAgent(p5, agent, grid);
@@ -81,7 +81,7 @@ export function stateHandler(p5: p5) {
     return getCurrentAgents(agents, canvas, grid, magnets);
   }
 
-  function updateState(state: State, nextStage: boolean): State {
+  const updateState = function(state: State, nextStage: boolean): State {
     const { stateIndex } = state;
 
     if (USED_STATES[stateIndex] === StateOfArt.DRAW_AGENTS) {
