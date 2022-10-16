@@ -31,6 +31,20 @@ export const renderer = function(p5: p5) {
     const val = drawingGenerator.next();
     return val.done;
   }
+
+  const confirmDrawingAgents = function(okPressed: () => void, cancelPressed: () => void, { width, height}: CanvasSettings) {
+
+    let OKbutton = p5.createButton('OK');
+    OKbutton.position(width/2 - 100, height/2);
+    OKbutton.mousePressed(() => okPressed());
+    OKbutton.size(100);
+    let cancelButton = p5.createButton('Cancel');
+    cancelButton.position(width/2 + 10, height/2);
+    cancelButton.size(100);
+    cancelButton.mousePressed(() => cancelPressed());
+    
+  }
+
   const agents = function(agents: AgentType[], canvas: CanvasSettings) {
     //Fades also grid
     p5.background(canvas.color.r, canvas.color.g, canvas.color.b, FADING);
@@ -48,5 +62,5 @@ export const renderer = function(p5: p5) {
     drawMagnetPoints(p5, magnetPoints);
   }
 
-  return { canvas, grid, helperLines, agents, magnetPoints };
+  return { canvas, grid, helperLines, agents, magnetPoints, confirmDrawingAgents };
 }

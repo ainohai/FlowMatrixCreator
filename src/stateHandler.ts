@@ -7,7 +7,6 @@ import {
 } from './entities/Agent';
 import { calculateForces } from './utils/gridUtil';
 import { config, StateOfArt } from './config';
-import * as p5 from 'p5';
 import {
   createMagnets,
   getCreators,
@@ -31,20 +30,20 @@ export type CanvasSettings = {
   color?: Rgb;
 };
 
-export const stateHandler = function(p5: p5) {
+export const stateHandler = function() {
   let agentBurst = 0;
 
   const initialState = function (canvasSettings: CanvasSettings): State {
     const { width, height } = canvasSettings;
 
     const grid = gridFactory(width, height);
-    const magnets = createMagnets(p5, width, height);
+    const magnets = createMagnets(width, height);
 
-    fillGridUsingFunction(p5, grid, magnets, calculateForces);
+    fillGridUsingFunction(grid, magnets, calculateForces);
 
     let startingPoints = getCreators(magnets);
 
-    let agents = createDummyAgents(p5, startingPoints, canvasSettings);
+    let agents = createDummyAgents(startingPoints, canvasSettings);
     agentBurst++;
 
     return {
@@ -67,7 +66,7 @@ export const stateHandler = function(p5: p5) {
       agentBurst++;
 
       const startingPoints = getCreators(magnets);
-      living.push(...createDummyAgents(p5, startingPoints, canvas));
+      living.push(...createDummyAgents(startingPoints, canvas));
     }
     return living;
   };
@@ -75,25 +74,25 @@ export const stateHandler = function(p5: p5) {
   const updateAgents = function(state: State): AgentType[] {
     const { agents, grid, canvas, magnets } = state;
     for (let agent of agents) {
-      moveAgent(p5, agent, grid);
+      moveAgent(agent, grid);
       checkIfAgentAlive(agent, canvas, getSinks(magnets), grid.gridSize);
     }
     return getCurrentAgents(agents, canvas, grid, magnets);
   }
 
-  const updateState = function(state: State, nextStage: boolean): State {
+  const updateState = function(state: State, nextStage: number): State {
     const { stateIndex } = state;
 
     if (USED_STATES[stateIndex] === StateOfArt.DRAW_AGENTS) {
       state.agents = updateAgents(state);
 
       if (state.agents.length === 0) {
-        nextStage = true;
+        nextStage = stateIndex + 1;
       }
     }
 
     return {...state, ...{
-      stateIndex: nextStage ? stateIndex + 1 : stateIndex,
+      stateIndex: nextStage,
     }};
   }
   return { initialState, updateState };

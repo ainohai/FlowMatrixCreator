@@ -2,11 +2,10 @@ import { GridType } from '../entities/Grid';
 import {
   angleOfLineBetweenPoints,
   distanceBetweenPoints,
-  vectorByAngle,
 } from './mathUtils';
-import * as p5 from 'p5';
 import { config } from '../config';
 import { MagnetPoint } from '../entities/MagnetPoint';
+import { ArtVector, createVectorByAngle } from '../entities/ArtVector';
 
 const { FORCE_MULTIPLIER } = config;
 
@@ -56,7 +55,7 @@ export const calculateForces = (
     throw 'Please, do not try to calc forces if there are no sinks or creators';
   }
 
-  let effectOfMagnetPoint: p5.Vector;
+  let effectOfMagnetPoint: ArtVector;
 
   const { x: locationX, y: locationY } = getLocationOfCell(row, column, grid);
 
@@ -86,14 +85,14 @@ export const calculateForces = (
 
     const strength = (FORCE_MULTIPLIER * magnet.strength) / distance;
 
-    const strengthVector: p5.Vector = vectorByAngle(angle, strength);
+    const strengthVector: ArtVector = createVectorByAngle(angle, strength);
     effectOfMagnetPoint = !!effectOfMagnetPoint
-      ? effectOfMagnetPoint.add(strengthVector)
+      ? effectOfMagnetPoint.copy().addMe(strengthVector)
       : strengthVector;
   }
   return {
-    direction: effectOfMagnetPoint.heading(),
-    velocity: effectOfMagnetPoint.mag(),
+    direction: effectOfMagnetPoint.direction,
+    velocity: effectOfMagnetPoint.strength,
   };
 };
 

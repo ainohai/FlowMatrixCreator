@@ -2,7 +2,7 @@ import { config } from '../config';
 import * as p5 from 'p5';
 import { CanvasSettings } from '../stateHandler';
 import { AgentType } from '../entities/Agent';
-import { strengthOfVector } from './mathUtils';
+import { mapToBoundaries } from './mathUtils';
 
 const { COLOR_PALETTE, MAXIMUM_ACC } = config;
 
@@ -10,16 +10,17 @@ export type Rgb = {
   r: number;
   g: number;
   b: number;
+  opacity: number;
 };
 
 export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
   return opacity
     ? p5.color(color.r, color.g, color.b, opacity)
-    : p5.color(color.r, color.g, color.b);
+    : p5.color(color.r, color.g, color.b, color.opacity ?? 100);
 };
 
 ///Test function for selecting color
-export const getRandomColor = (p5: p5, agent: AgentType) => {
+/*const getRandomColor = (p5: p5, agent: AgentType) => {
   const index = Math.floor(p5.random(COLOR_PALETTE.length));
   const color = COLOR_PALETTE[index];
   agent.color = p5.color(color.r, color.g, color.b);
@@ -52,10 +53,10 @@ export const colorByXPos = (
   agent.color = color;
 
   return color;
-};
+};*/
 
 ///Test function for selecting color
-export const colorNoise = (
+/*export const colorNoise = (
   p5: p5,
   agent: AgentType,
   canvas: CanvasSettings
@@ -68,21 +69,21 @@ export const colorNoise = (
   agent.color = color;
   return color;
 };
-
+*/
 ///Test function for selecting color
 export const colorByVelocity = (
-  p5: p5,
   agent: AgentType,
   canvas: CanvasSettings
-) => {
-  const acc = strengthOfVector(agent.acceleration);
+): Rgb => {
+  const acc = agent.acceleration.strength;
 
   const index =
-    Math.floor(p5.map(acc, 0, MAXIMUM_ACC, 0, COLOR_PALETTE.length - 1)) %
+    Math.floor(mapToBoundaries(acc, 0, MAXIMUM_ACC, 0, COLOR_PALETTE.length - 1)) %
     COLOR_PALETTE.length;
 
   const opacity = 95;
-  const color = rgbToP5Color(p5, COLOR_PALETTE[index], opacity);
+  const color = COLOR_PALETTE[index]
+  color.opacity = opacity;
 
   if (acc !== 0) {
     agent.color = color;

@@ -1,14 +1,13 @@
 import { GridType } from './Grid';
 import { getCurrentGridPosition, isOnSameGridPoint } from '../utils/gridUtil';
-import { Vector, Color } from 'p5';
-import * as p5 from 'p5';
 import { config } from '../config';
 import { CanvasSettings } from '../stateHandler';
-import { addOffset } from '../utils/mathUtils';
+import { addOffset, getRandomFloat } from '../utils/mathUtils';
 import {
-  colorByVelocity,
+  colorByVelocity, Rgb,
 } from '../utils/utils';
 import { MagnetPoint } from './MagnetPoint';
+import { ArtVector } from './ArtVector';
 
 const {
   DEFAULT_LIFESPAN,
@@ -23,43 +22,42 @@ const {
 } = config;
 
 export type AgentType = {
-  position: Vector;
-  velocity: Vector;
+  position: ArtVector;
+  velocity: ArtVector;
   lifespanInFrames: number;
-  color: Color | ((p5: p5, agent: AgentType, canvas: CanvasSettings) => Color);
+  color: Rgb | ((agent: AgentType, canvas: CanvasSettings) => Rgb);
   strokeWidth: number;
   //Todo: Do we really want/need this at all.
-  previousPos: Vector;
-  acceleration?: Vector;
+  previousPos: ArtVector;
+  acceleration?: ArtVector;
   isAlive: boolean;
 };
 
-const getDefaultSettings = (p5: p5) => ({
+const getDefaultSettings = () => ({
   lifespanInFrames: DEFAULT_LIFESPAN,
-  color: (p5: p5, agent: AgentType, canvas: CanvasSettings) =>
+  color: (agent: AgentType, canvas: CanvasSettings) =>
     //Todo: Should be given in config.
-    colorByVelocity(p5, agent, canvas),
-  strokeWidth: p5.random(0, MAX_STROKE),
-  acceleration: p5.createVector(0, 0),
+    colorByVelocity(agent, canvas),
+  strokeWidth: getRandomFloat(MAX_STROKE),
+  acceleration: new ArtVector(0, 0),
   isAlive: true,
 });
 
 export const dummyAgent = (
-  p5: p5,
   x: number,
   y: number,
-  color?: (p5: p5, agent: AgentType, canvas: CanvasSettings) => Color,
+  color?: (agent: AgentType, canvas: CanvasSettings) => Rgb,
   velocityX = 0,
   velocityY = 0
 ): AgentType => {
   return {
     ...{
-      position: p5.createVector(x, y),
-      previousPos: p5.createVector(x, y),
-      velocity: p5.createVector(velocityX, velocityY),
+      position: new ArtVector(x, y),
+      previousPos: new ArtVector(x, y),
+      velocity: new ArtVector(velocityX, velocityY),
       color: color,
     },
-    ...getDefaultSettings(p5),
+    ...getDefaultSettings(),
   };
 };
 
@@ -68,7 +66,6 @@ export const dummyAgent = (
 export const updateAcceleration = (
   agent: AgentType,
   grid: GridType,
-  p5: p5
 ) => {
   const { row, column } = getCurrentGridPosition(
     agent.position.x,
@@ -85,11 +82,11 @@ export const updateAcceleration = (
 
   const gridVelocity = position.velocity;
 
-  let steer: p5.Vector = ADD_TO_OLD_VELOCITY
-    ? agent.acceleration.add(gridVelocity)
+  let steer: ArtVector = ADD_TO_OLD_VELOCITY
+    ? agent.acceleration.copy().addMe(gridVelocity) //TODO: Possibly changed functionality 
     : gridVelocity.copy();
 
-  steer.limit(MAXIMUM_ACC);
+  steer.limitMe(MAXIMUM_ACC);
   agent.acceleration = steer;
 };
 
@@ -98,16 +95,15 @@ export const updateAcceleration = (
  */
 const updateVelocity = (agent: AgentType, addToOldVelocity: boolean) => {
   if (addToOldVelocity) {
-    agent.velocity.mult(FRICTION_MULTIPLIER);
-    agent.velocity.add(agent.acceleration);
+    agent.velocity = agent.velocity.multiplyMe(FRICTION_MULTIPLIER);
+    agent.velocity.addMe(agent.acceleration);
   } else {
     agent.velocity = agent.acceleration.copy();
   }
-  agent.velocity.limit(MAXIMUM_VELOCITY);
+  agent.velocity.limitMe(MAXIMUM_VELOCITY);
 };
 
 export const moveAgent = (
-  p5: p5,
   agent: AgentType,
   grid: GridType,
   addToOldVelocity = ADD_TO_OLD_VELOCITY
@@ -115,10 +111,10 @@ export const moveAgent = (
   agent.lifespanInFrames--;
   agent.previousPos = agent.position.copy();
 
-  updateAcceleration(agent, grid, p5);
+  updateAcceleration(agent, grid);
   updateVelocity(agent, addToOldVelocity);
 
-  agent.position.add(agent.velocity);
+  agent.position.addMe(agent.velocity);
 };
 
 const onKillPoint = (

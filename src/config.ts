@@ -8,6 +8,7 @@ export enum StateOfArt {
   DRAW_AGENTS,
   DRAW_HELPER_GRID,
   DRAW_MAGNETS,
+  CONFIRM_DRAW_AGENTS,
   END,
 }
 
@@ -48,14 +49,15 @@ export const config = {
   //In future it would be nice to let user decide from UI if they want to draw helpers or not.
   USED_STATES: [
     StateOfArt.SETUP,
-    StateOfArt.DRAW_GRID,
+    //StateOfArt.DRAW_GRID,
     //StateOfArt.DRAW_HELPER_GRID,
-    //StateOfArt.DRAW_MAGNETS,
+    StateOfArt.DRAW_MAGNETS,
+    StateOfArt.CONFIRM_DRAW_AGENTS,
     StateOfArt.DRAW_AGENTS,
     StateOfArt.END,
   ] as StateOfArt[],
 
-  TOTAL_BURSTS: 10,
+  TOTAL_BURSTS: 200,
   BURST_SIZE: 500,
   OFFSET: 50,
   MIN_AGENTS: 200,
@@ -70,7 +72,7 @@ export const config = {
   FORCE_MULTIPLIER: 10,
 
   MAX_STROKE: 5,
-  DEFAULT_LIFESPAN: 25,
+  DEFAULT_LIFESPAN: 3,
   MAXIMUM_VELOCITY: 5,
   MAXIMUM_ACC: 1,
   ADD_TO_OLD_VELOCITY: true,

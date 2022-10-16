@@ -1,5 +1,5 @@
-import * as p5 from 'p5';
 import { config } from '../config';
+import { ArtVector, createVector } from './ArtVector';
 import { MagnetPoint } from './MagnetPoint';
 
 const { GRID_SIZE } = config;
@@ -10,7 +10,7 @@ const EXTRA_TOP = 0;
 const EXTRA_BOTTOM = 0;
 
 export type GridValue = {
-  velocity: p5.Vector;
+  velocity: ArtVector;
 };
 
 export type GridType = {
@@ -45,7 +45,6 @@ export const gridFactory = (
 
 //Modifies existing grid by applying function to all members of grid.
 export const fillGridUsingFunction = (
-  p5: p5,
   grid: GridType,
   magnetPoints: MagnetPoint[],
   countAngleCallBack: (
@@ -69,9 +68,9 @@ export const fillGridUsingFunction = (
       const xStep = velocity * Math.cos(direction);
       const yStep = velocity * Math.sin(direction);
 
-      //Should we create p5 vector at this point or would it be more performant to use just angle and strength?
+      //Should we create vector at this point or would it be more performant to use just angle and strength?
       let gridPoint: GridValue = {
-        velocity: p5.createVector(xStep, yStep, 0),
+        velocity: createVector(xStep, yStep),
       };
 
       gridValues[column][row] = gridPoint;

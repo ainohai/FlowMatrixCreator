@@ -2,6 +2,7 @@ import * as p5 from 'p5';
 import { renderer } from './renderer';
 import { State, stateHandler } from './stateHandler';
 import { config, StateOfArt } from './config';
+import { GridType } from './entities/Grid';
 
 /**TODO:
  * 1. FIX: When agent is created to max value, grid point is not found when agent is moved => error.
@@ -38,7 +39,7 @@ const { USED_STATES, BACKGROUND_COLOR } = config;
 
 export const sketch = function (p5: p5) {
   const render = renderer(p5);
-  const handler = stateHandler(p5);
+  const handler = stateHandler();
 
   let state: State = handler.initialState({
     //todo: solve why p5 gives faulty values for width & height
@@ -47,37 +48,48 @@ export const sketch = function (p5: p5) {
     color: BACKGROUND_COLOR,
   });
 
+  let renderState = (renderState: State): number => {
+    const { grid, agents, stateIndex, canvas, magnets } = renderState;
+        //todo: Some other solution?
+        let nextStage = stateIndex;
+        switch (USED_STATES[stateIndex]) {
+          case StateOfArt.DRAW_GRID:
+            let gridDone = render.grid(grid);
+            nextStage = gridDone ? stateIndex + 1 : stateIndex;
+            break;
+          case StateOfArt.DRAW_HELPER_GRID:
+            render.helperLines(canvas);
+            nextStage = stateIndex + 1;
+            break;
+          case StateOfArt.DRAW_MAGNETS:
+            render.magnetPoints(magnets);
+            nextStage = stateIndex + 1;
+            break;
+          case StateOfArt.CONFIRM_DRAW_AGENTS:
+              render.confirmDrawingAgents(() => {console.log("ok"); state.stateIndex = stateIndex + 1}, () => state.stateIndex = 0, {width: canvas.width, height: canvas.height});
+              break;  
+          case StateOfArt.DRAW_AGENTS:
+            render.agents(agents, canvas);
+            break;
+          case StateOfArt.END:
+            console.log('done'); //DEBUG
+            p5.noLoop();
+            break;
+        }
+  
+      return nextStage;
+  }
+
   p5.setup = () => {
     render.canvas(state.canvas);
-    state = handler.updateState(state, true);
+    state = handler.updateState(state, state.stateIndex + 1);
   };
 
   // Main render loop
   p5.draw = () => {
-    const { grid, agents, stateIndex, canvas, magnets } = state;
+    
+    let nextStage = renderState(state)
 
-    //todo: Some other solution?
-    let nextStage: boolean | undefined;
-    switch (USED_STATES[stateIndex]) {
-      case StateOfArt.DRAW_GRID:
-        nextStage = render.grid(grid);
-        break;
-      case StateOfArt.DRAW_HELPER_GRID:
-        render.helperLines(canvas);
-        nextStage = true;
-        break;
-      case StateOfArt.DRAW_MAGNETS:
-        render.magnetPoints(magnets);
-        nextStage = true;
-        break;
-      case StateOfArt.DRAW_AGENTS:
-        render.agents(agents, canvas);
-        break;
-      case StateOfArt.END:
-        console.log('done'); //DEBUG
-        p5.noLoop();
-        break;
-    }
     state = handler.updateState(state, nextStage);
   };
 };
