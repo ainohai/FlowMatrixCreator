@@ -49,12 +49,12 @@ export const getRandomFloat = (max: number): number => {
   return Math.random() * max;
 };
 
-const constrain = (n, low, high) => {
+const constrain = (n: number, low: number, high: number) => {
   return Math.max(Math.min(n, high), low);
 };
 
 //Copies implementation from p5.
-export const mapToBoundaries = (n, start1, stop1, start2, stop2) => {
+export const mapToBoundaries = (n: number, start1: number, stop1: number, start2: number, stop2: number) => {
   
   const withinBounds = true;
 

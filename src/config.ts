@@ -1,6 +1,7 @@
 import { Rgb } from './utils/utils';
 import * as ColorScheme from 'color-scheme';
 import hexRgb, { RgbaObject } from 'hex-rgb';
+import { getRandomInt } from './utils/mathUtils';
 
 export enum StateOfArt {
   SETUP,
@@ -11,10 +12,6 @@ export enum StateOfArt {
   CONFIRM_DRAW_AGENTS,
   END,
 }
-
-const getRandomInt = (max: number) => {
-  return Math.floor(Math.random() * max);
-};
 
 const paletteSchemes = ['mono', 'contrast', 'triade', 'tetrade', 'analogic'];
 const variations = ['default', 'pastel', 'soft', 'light', 'hard', 'pale'];
@@ -79,6 +76,6 @@ export const config = {
   FRICTION_MULTIPLIER: 0.5,
 
   COLOR_PALETTE: getScheme(),
-  BACKGROUND_COLOR: { r: 35, g: 38, b: 38 },
+  BACKGROUND_COLOR: { r: 35, g: 38, b: 38, opacity: 100 },
   FADING: 0.8,
 } as const;

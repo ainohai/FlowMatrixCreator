@@ -1,13 +1,19 @@
 import { AgentType } from '../entities/Agent';
 import { GridType } from '../entities/Grid';
 import * as p5 from 'p5';
-import { getLocationOfCell } from './gridUtil';
+import { getLocationOfCell } from '../utils/gridUtil';
 import { config } from '../config';
-import { CanvasSettings } from '../stateHandler';
+import { CanvasSettings } from '../stateHandling/stateHandler';
 import { MagnetPoint } from '../entities/MagnetPoint';
-import { rgbToP5Color } from './utils';
+import { Rgb } from '../utils/utils';
 
 const { HELPER_GRID_SIZE, COLOR_PALETTE, MAGNET_STRENGTH_MAX } = config;
+
+export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
+  return opacity
+    ? p5.color(color.r, color.g, color.b, opacity)
+    : p5.color(color.r, color.g, color.b, color.opacity ?? 100);
+};
 
 /**
  * Draws horizontal and vertical lines.
@@ -22,13 +28,14 @@ export const drawHelpGrid = (p5: p5, canvas: CanvasSettings) => {
 };
 
 export const drawAgent = (agent: AgentType, p5: p5, canvas: CanvasSettings) => {
-  let color =
+  const color =
     typeof agent.color === 'function'
-      ? agent.color(p5, agent, canvas)
+      ? agent.color(agent, canvas)
       : agent.color;
 
-  p5.stroke(color);
-  p5.fill(color);
+  const p5Color = rgbToP5Color(p5, color, undefined);    
+  p5.stroke(p5Color);
+  p5.fill(p5Color);
   p5.strokeWeight(agent.strokeWidth);
   //draws occasional circles
   if (p5.random(1) > 0.99) {

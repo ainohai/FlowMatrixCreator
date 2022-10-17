@@ -1,15 +1,15 @@
-import { GridType } from './entities/Grid';
-import { AgentType } from './entities/Agent';
+import { GridType } from '../entities/Grid';
+import { AgentType } from '../entities/Agent';
 import {
   drawAgent,
   drawHelperMatrix,
   drawHelpGrid,
   drawMagnetPoints,
-} from './utils/drawingUtils';
+} from './drawingUtils';
 import * as p5 from 'p5';
-import { CanvasSettings } from './stateHandler';
-import { config } from './config';
-import { MagnetPoint } from './entities/MagnetPoint';
+import { CanvasSettings } from '../stateHandling/stateHandler';
+import { config } from '../config';
+import { MagnetPoint } from '../entities/MagnetPoint';
 
 const { BACKGROUND_COLOR, FADING } = config;
 

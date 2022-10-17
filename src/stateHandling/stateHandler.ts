@@ -1,19 +1,20 @@
-import { fillGridUsingFunction, gridFactory, GridType } from './entities/Grid';
+import { fillGridUsingFunction, gridFactory, GridType } from '../entities/Grid';
 import {
   AgentType,
   checkIfAgentAlive,
   createDummyAgents,
   moveAgent,
-} from './entities/Agent';
-import { calculateForces } from './utils/gridUtil';
-import { config, StateOfArt } from './config';
+} from '../entities/Agent';
+import { calculateForces } from '../utils/gridUtil';
+import { config, StateOfArt } from '../config';
 import {
   createMagnets,
   getCreators,
   getSinks,
   MagnetPoint,
-} from './entities/MagnetPoint';
-import { Rgb } from './utils/utils';
+} from '../entities/MagnetPoint';
+import { Rgb } from '../utils/utils';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 const { TOTAL_BURSTS, USED_STATES, MIN_AGENTS } = config;
 
@@ -30,7 +31,7 @@ export type CanvasSettings = {
   color?: Rgb;
 };
 
-export const stateHandler = function() {
+export const stateHandler = function(windowWidth: number, windowHeight: number, backgroundColor: Rgb, updateStateTrigger: Subject<number>) {
   let agentBurst = 0;
 
   const initialState = function (canvasSettings: CanvasSettings): State {
@@ -95,5 +96,26 @@ export const stateHandler = function() {
       stateIndex: nextStage,
     }};
   }
-  return { initialState, updateState };
+
+  const initState: State = initialState({
+    //todo: solve why p5 gives faulty values for width & height
+    width: windowWidth,
+    height: windowHeight,
+    color: backgroundColor,
+  }); 
+
+  const stateSubject = new BehaviorSubject(initState);
+  const stateObs = () => stateSubject;
+
+  updateStateTrigger.subscribe((nextStage) => 
+      { 
+        console.log("listening to state updates")
+        let state = stateSubject.getValue();
+        stateSubject.next(updateState(state, nextStage))
+    });
+
+
+    stateSubject.subscribe((newState) => console.log(newState.stateIndex));
+
+  return stateObs;
 }

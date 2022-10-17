@@ -1,8 +1,8 @@
 import { GridType } from './Grid';
 import { getCurrentGridPosition, isOnSameGridPoint } from '../utils/gridUtil';
 import { config } from '../config';
-import { CanvasSettings } from '../stateHandler';
-import { addOffset, getRandomFloat } from '../utils/mathUtils';
+import { CanvasSettings } from '../stateHandling/stateHandler';
+import { addOffset, getRandomFloat, getRandomInt } from '../utils/mathUtils';
 import {
   colorByVelocity, Rgb,
 } from '../utils/utils';
@@ -83,7 +83,7 @@ export const updateAcceleration = (
   const gridVelocity = position.velocity;
 
   let steer: ArtVector = ADD_TO_OLD_VELOCITY
-    ? agent.acceleration.copy().addMe(gridVelocity) //TODO: Possibly changed functionality 
+    ? agent.acceleration.copy().addMe(gridVelocity) 
     : gridVelocity.copy();
 
   steer.limitMe(MAXIMUM_ACC);
@@ -150,40 +150,38 @@ export const checkIfAgentAlive = (
 
 const getStartingPoint = (
   creatingPoints: MagnetPoint[],
-  canvas: CanvasSettings,
-  p5: p5
+  canvas: CanvasSettings
 ): MagnetPoint => {
   let point =
     !!creatingPoints && creatingPoints.length > 0
-      ? creatingPoints[Math.floor(p5.random(creatingPoints.length))]
+      ? creatingPoints[getRandomInt(creatingPoints.length)]
       : {
-          locationX: p5.random(canvas.width),
-          locationY: p5.random(canvas.height),
+          locationX: getRandomInt(canvas.width),
+          locationY: getRandomInt(canvas.height),
         };
 
   return {
-    locationX: addOffset(point.locationX, OFFSET, canvas.width, p5),
-    locationY: addOffset(point.locationY, OFFSET, canvas.height, p5),
+    locationX: addOffset(point.locationX, OFFSET, canvas.width),
+    locationY: addOffset(point.locationY, OFFSET, canvas.height),
   };
 };
 
 export const createDummyAgents = (
-  p5: p5,
   magnets: MagnetPoint[],
   canvas: CanvasSettings,
-  color?: (p5: p5, agent: AgentType, canvas: CanvasSettings) => Color,
-  numOfAgents = BURST_SIZE
+  numOfAgents = BURST_SIZE,
+  color?: (agent: AgentType, canvas: CanvasSettings) => Rgb
 ): AgentType[] => {
   const agents = [];
 
   for (let i = 0; i < numOfAgents; i++) {
     const point = RANDOM_START
       ? {
-          locationX: p5.random(canvas.width),
-          locationY: p5.random(canvas.height),
+          locationX: getRandomInt(canvas.width),
+          locationY: getRandomInt(canvas.height),
         }
-      : getStartingPoint(magnets, canvas, p5);
-    const dummy = dummyAgent(p5, point.locationX, point.locationY, color);
+      : getStartingPoint(magnets, canvas);
+    const dummy = dummyAgent(point.locationX, point.locationY, color);
     agents.push(dummy);
   }
   return agents;

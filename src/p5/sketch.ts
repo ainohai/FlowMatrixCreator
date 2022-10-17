@@ -1,8 +1,10 @@
 import * as p5 from 'p5';
 import { renderer } from './renderer';
-import { State, stateHandler } from './stateHandler';
-import { config, StateOfArt } from './config';
-import { GridType } from './entities/Grid';
+import { config, StateOfArt } from '../config';
+import { GridType } from '../entities/Grid';
+import { State } from '../stateHandling/stateHandler';
+import { ActionType, stateObserver, triggerStateUpdate, triggerUserActions } from '..';
+
 
 /**TODO:
  * 1. FIX: When agent is created to max value, grid point is not found when agent is moved => error.
@@ -35,18 +37,13 @@ import { GridType } from './entities/Grid';
  * @param p5
  */
 
-const { USED_STATES, BACKGROUND_COLOR } = config;
+const { USED_STATES } = config;
 
 export const sketch = function (p5: p5) {
   const render = renderer(p5);
-  const handler = stateHandler();
 
-  let state: State = handler.initialState({
-    //todo: solve why p5 gives faulty values for width & height
-    width: p5.windowWidth,
-    height: p5.windowHeight,
-    color: BACKGROUND_COLOR,
-  });
+  let state;
+  stateObserver().subscribe((value) => state = value );
 
   let renderState = (renderState: State): number => {
     const { grid, agents, stateIndex, canvas, magnets } = renderState;
@@ -66,7 +63,10 @@ export const sketch = function (p5: p5) {
             nextStage = stateIndex + 1;
             break;
           case StateOfArt.CONFIRM_DRAW_AGENTS:
-              render.confirmDrawingAgents(() => {console.log("ok"); state.stateIndex = stateIndex + 1}, () => state.stateIndex = 0, {width: canvas.width, height: canvas.height});
+              render.confirmDrawingAgents(
+                () => { triggerUserActions().next({action: ActionType.DRAW_AGENTS}); }, 
+                () => { triggerUserActions().next({action: ActionType.CANCEL});}, 
+                {width: canvas.width, height: canvas.height});
               break;  
           case StateOfArt.DRAW_AGENTS:
             render.agents(agents, canvas);
@@ -81,15 +81,17 @@ export const sketch = function (p5: p5) {
   }
 
   p5.setup = () => {
+    
     render.canvas(state.canvas);
-    state = handler.updateState(state, state.stateIndex + 1);
+    //TODO: not so good way to give index directly here. Change this. 
+    triggerStateUpdate().next(state.stateIndex + 1);
   };
 
   // Main render loop
   p5.draw = () => {
     
     let nextStage = renderState(state)
-
-    state = handler.updateState(state, nextStage);
+    triggerStateUpdate().next(nextStage);
   };
 };
+
