@@ -14,10 +14,12 @@ export type UserAction = {
    payload?: any;
 }
 
+export type Payload = {phaseDone? : boolean, reset?: boolean};
+
 const { BACKGROUND_COLOR } = config;
 
 const userActions = new Subject<UserAction>();
-const updateState = new Subject<number>();
+const updateState = new Subject<Payload>();
 
 //TODO: Still needs refactoring. Where should these be?
 export const triggerUserActions = () => userActions;
@@ -29,16 +31,24 @@ export const stateObserver = state;
 //TODO: Urgh. Fix this! 
 userActions.subscribe((val) => {
     if(val.action === ActionType.DRAW_AGENTS) { 
-       triggerStateUpdate().next(3);
+       triggerStateUpdate().next({phaseDone : true});
     } else if(val.action === ActionType.CANCEL) 
-       triggerStateUpdate().next(1)
+       triggerStateUpdate().next({phaseDone : false})
     }
 );
 
 
 new p5(sketch, document.getElementById('p5-container'));
 
+let button = document.getElementById("button-draw")
+button.addEventListener('click', (event) => {
+  triggerStateUpdate().next({phaseDone : true}); 
+})
 
+let resetButton = document.getElementById("button-reset")
+resetButton.addEventListener('click', (event) => {
+  triggerStateUpdate().next({reset: true}); 
+})
 
 
 

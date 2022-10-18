@@ -12,7 +12,7 @@ const { HELPER_GRID_SIZE, COLOR_PALETTE, MAGNET_STRENGTH_MAX } = config;
 export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
   return opacity
     ? p5.color(color.r, color.g, color.b, opacity)
-    : p5.color(color.r, color.g, color.b, color.opacity ?? 100);
+    : p5.color(color.r, color.g, color.b, color.opacity ?? 255);
 };
 
 /**

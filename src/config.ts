@@ -1,43 +1,17 @@
-import { Rgb } from './utils/utils';
-import * as ColorScheme from 'color-scheme';
-import hexRgb, { RgbaObject } from 'hex-rgb';
-import { getRandomInt } from './utils/mathUtils';
+import { getScheme } from './utils/colorUtil';
 
 export enum StateOfArt {
-  SETUP,
-  DRAW_GRID,
-  DRAW_AGENTS,
-  DRAW_HELPER_GRID,
-  DRAW_MAGNETS,
-  CONFIRM_DRAW_AGENTS,
-  END,
+  SETUP = "SETUP",
+  DRAW_GRID = "DRAW_GRID",
+  DRAW_AGENTS = "DRAW_AGENTS",
+  DRAW_HELPER_GRID= "DRAW_HELPER_GRID" ,
+  DRAW_MAGNETS = "DRAW_MAGNETS",
+  CONFIRM_DRAW = "CONFIRM_DRAW",
+  CLEAR_SCREEN ="CLEAR_SCREEN",
+  PAUSE = "PAUSE",
+  RESET ="RESET",
+  END ="END",
 }
-
-const paletteSchemes = ['mono', 'contrast', 'triade', 'tetrade', 'analogic'];
-const variations = ['default', 'pastel', 'soft', 'light', 'hard', 'pale'];
-
-const getScheme = (): Rgb[] => {
-  const paletteScheme = paletteSchemes[getRandomInt(paletteSchemes.length)];
-  const variation = variations[getRandomInt(variations.length - 1)];
-
-  const scheme = new ColorScheme();
-  scheme.from_hue(getRandomInt(359)).scheme(paletteScheme);
-  scheme.variation(variation);
-
-  const colors = scheme.colors();
-
-  console.log(paletteScheme);
-  console.log(variation);
-  console.log(colors);
-
-  const rgbs = colors.map((color) => hexRgb(color));
-
-  return rgbs.map((rgba: RgbaObject) => ({
-    r: rgba.red,
-    b: rgba.blue,
-    g: rgba.green,
-  }));
-};
 
 //default configurations
 export const config = {
@@ -49,9 +23,11 @@ export const config = {
     //StateOfArt.DRAW_GRID,
     //StateOfArt.DRAW_HELPER_GRID,
     StateOfArt.DRAW_MAGNETS,
-    StateOfArt.CONFIRM_DRAW_AGENTS,
+    StateOfArt.CONFIRM_DRAW,
+    StateOfArt.CLEAR_SCREEN,
     StateOfArt.DRAW_AGENTS,
     StateOfArt.END,
+    StateOfArt.RESET,
   ] as StateOfArt[],
 
   TOTAL_BURSTS: 200,
@@ -76,6 +52,6 @@ export const config = {
   FRICTION_MULTIPLIER: 0.5,
 
   COLOR_PALETTE: getScheme(),
-  BACKGROUND_COLOR: { r: 35, g: 38, b: 38, opacity: 100 },
+  BACKGROUND_COLOR: { r: 35, g: 38, b: 38, opacity: 255 },
   FADING: 0.8,
 } as const;

@@ -1,9 +1,8 @@
 import * as p5 from 'p5';
 import { renderer } from './renderer';
 import { config, StateOfArt } from '../config';
-import { GridType } from '../entities/Grid';
 import { State } from '../stateHandling/stateHandler';
-import { ActionType, stateObserver, triggerStateUpdate, triggerUserActions } from '..';
+import { Payload, stateObserver, triggerStateUpdate, triggerUserActions } from '..';
 
 
 /**TODO:
@@ -31,12 +30,12 @@ import { ActionType, stateObserver, triggerStateUpdate, triggerUserActions } fro
  * 11. Make it art.
  **/
 
+
 /**
  * @return true if can move to next state
  * @param state
  * @param p5
  */
-
 const { USED_STATES } = config;
 
 export const sketch = function (p5: p5) {
@@ -45,53 +44,50 @@ export const sketch = function (p5: p5) {
   let state;
   stateObserver().subscribe((value) => state = value );
 
-  let renderState = (renderState: State): number => {
+  let renderState = (renderState: State): Payload => {
     const { grid, agents, stateIndex, canvas, magnets } = renderState;
         //todo: Some other solution?
-        let nextStage = stateIndex;
+        let payload = {};
         switch (USED_STATES[stateIndex]) {
           case StateOfArt.DRAW_GRID:
             let gridDone = render.grid(grid);
-            nextStage = gridDone ? stateIndex + 1 : stateIndex;
+            payload = { phaseDone: gridDone };
             break;
           case StateOfArt.DRAW_HELPER_GRID:
             render.helperLines(canvas);
-            nextStage = stateIndex + 1;
             break;
           case StateOfArt.DRAW_MAGNETS:
             render.magnetPoints(magnets);
-            nextStage = stateIndex + 1;
             break;
-          case StateOfArt.CONFIRM_DRAW_AGENTS:
-              render.confirmDrawingAgents(
-                () => { triggerUserActions().next({action: ActionType.DRAW_AGENTS}); }, 
-                () => { triggerUserActions().next({action: ActionType.CANCEL});}, 
-                {width: canvas.width, height: canvas.height});
-              break;  
+          case StateOfArt.CLEAR_SCREEN:
+            render.clearScreen(canvas.color);  
+            break;
           case StateOfArt.DRAW_AGENTS:
             render.agents(agents, canvas);
             break;
           case StateOfArt.END:
             console.log('done'); //DEBUG
-            p5.noLoop();
             break;
+          case StateOfArt.RESET:
+            render.reset(canvas.color);
+            break;  
         }
   
-      return nextStage;
+      return payload;
   }
 
   p5.setup = () => {
     
     render.canvas(state.canvas);
     //TODO: not so good way to give index directly here. Change this. 
-    triggerStateUpdate().next(state.stateIndex + 1);
+    triggerStateUpdate().next({});
   };
 
   // Main render loop
   p5.draw = () => {
     
-    let nextStage = renderState(state)
-    triggerStateUpdate().next(nextStage);
+    let payload = renderState(state)
+    triggerStateUpdate().next(payload);
   };
 };
 

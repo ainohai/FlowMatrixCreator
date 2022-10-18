@@ -10,16 +10,28 @@ import * as p5 from 'p5';
 import { CanvasSettings } from '../stateHandling/stateHandler';
 import { config } from '../config';
 import { MagnetPoint } from '../entities/MagnetPoint';
+import { Rgb } from '../utils/utils';
 
 const { BACKGROUND_COLOR, FADING } = config;
 
 export const renderer = function(p5: p5) {
   let drawingGenerator: Generator<void, void, unknown>;
 
+  const clearScreen = function(color: Rgb) {
+    p5.background(color.r, color.g, color.b);
+    p5.stroke(0,0,0)
+    p5.strokeWeight(0.5);
+  }
+
   const canvas = function ({ width, height, color = BACKGROUND_COLOR }: CanvasSettings) {
     p5.createCanvas(width, height);
-    p5.background(color.r, color.g, color.b);
+    clearScreen(color);
   }
+
+  const reset = function (bgColor: Rgb) {
+    clearScreen(bgColor);
+  }
+
 
   /**
    * @return true, if the grid is fully drawn.
@@ -30,19 +42,6 @@ export const renderer = function(p5: p5) {
     }
     const val = drawingGenerator.next();
     return val.done;
-  }
-
-  const confirmDrawingAgents = function(okPressed: () => void, cancelPressed: () => void, { width, height}: CanvasSettings) {
-
-    let OKbutton = p5.createButton('OK');
-    OKbutton.position(width/2 - 100, height/2);
-    OKbutton.mousePressed(() => okPressed());
-    OKbutton.size(100);
-    let cancelButton = p5.createButton('Cancel');
-    cancelButton.position(width/2 + 10, height/2);
-    cancelButton.size(100);
-    cancelButton.mousePressed(() => cancelPressed());
-    
   }
 
   const agents = function(agents: AgentType[], canvas: CanvasSettings) {
@@ -62,5 +61,5 @@ export const renderer = function(p5: p5) {
     drawMagnetPoints(p5, magnetPoints);
   }
 
-  return { canvas, grid, helperLines, agents, magnetPoints, confirmDrawingAgents };
+  return { canvas, grid, helperLines, agents, magnetPoints, reset, clearScreen };
 }

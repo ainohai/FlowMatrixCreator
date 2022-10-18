@@ -15,8 +15,11 @@ import {
 } from '../entities/MagnetPoint';
 import { Rgb } from '../utils/utils';
 import { BehaviorSubject, Subject } from 'rxjs';
+import { Payload } from '..';
+import { getScheme } from '../utils/colorUtil';
 
-const { TOTAL_BURSTS, USED_STATES, MIN_AGENTS } = config;
+
+const { TOTAL_BURSTS, USED_STATES, MIN_AGENTS, COLOR_PALETTE } = config;
 
 export type State = {
   grid: GridType;
@@ -31,7 +34,7 @@ export type CanvasSettings = {
   color?: Rgb;
 };
 
-export const stateHandler = function(windowWidth: number, windowHeight: number, backgroundColor: Rgb, updateStateTrigger: Subject<number>) {
+export const stateHandler = function(windowWidth: number, windowHeight: number, backgroundColor: Rgb, updateStateTrigger: Subject<Payload>) {
   let agentBurst = 0;
 
   const initialState = function (canvasSettings: CanvasSettings): State {
@@ -45,7 +48,7 @@ export const stateHandler = function(windowWidth: number, windowHeight: number, 
     let startingPoints = getCreators(magnets);
 
     let agents = createDummyAgents(startingPoints, canvasSettings);
-    agentBurst++;
+    agentBurst = 0;
 
     return {
       grid: grid,
@@ -80,20 +83,45 @@ export const stateHandler = function(windowWidth: number, windowHeight: number, 
     }
     return getCurrentAgents(agents, canvas, grid, magnets);
   }
+  const reset = function(state: State): State {
+    return initialState(state.canvas);
+  }
 
-  const updateState = function(state: State, nextStage: number): State {
+  const updateState = function(state: State, payload: Payload): State {
     const { stateIndex } = state;
+    let next = false; 
+    let definedState: number | undefined;
 
-    if (USED_STATES[stateIndex] === StateOfArt.DRAW_AGENTS) {
+
+    if (USED_STATES[stateIndex] === StateOfArt.SETUP || USED_STATES[stateIndex] === StateOfArt.DRAW_HELPER_GRID || USED_STATES[stateIndex] === StateOfArt.DRAW_MAGNETS || USED_STATES[stateIndex] === StateOfArt.CLEAR_SCREEN ) {
+      next = true;
+    }
+    else if (USED_STATES[stateIndex] === StateOfArt.DRAW_AGENTS) {
       state.agents = updateAgents(state);
 
       if (state.agents.length === 0) {
-        nextStage = stateIndex + 1;
+        next = true;
       }
     }
+    else if (USED_STATES[stateIndex] === StateOfArt.RESET) {
+      state = reset(state);
+      definedState = USED_STATES.indexOf(StateOfArt.SETUP) + 1;
+    }
+    else {
+      next = payload.phaseDone;
+    }
+
+    if (payload.reset) {
+      definedState = USED_STATES.indexOf(StateOfArt.RESET);
+    }
+
+    //TODO: Remove debug
+    if (next || definedState) {console.log(`Moving to stage: ${StateOfArt[USED_STATES[stateIndex]as keyof typeof StateOfArt]}`)}
+
+    console.log(`Def: ${definedState}, next: ${next}, current: ${StateOfArt[USED_STATES[stateIndex]as keyof typeof StateOfArt]}`);
 
     return {...state, ...{
-      stateIndex: nextStage,
+      stateIndex: definedState ? definedState : (next ? stateIndex + 1 : stateIndex),
     }};
   }
 
@@ -107,15 +135,11 @@ export const stateHandler = function(windowWidth: number, windowHeight: number, 
   const stateSubject = new BehaviorSubject(initState);
   const stateObs = () => stateSubject;
 
-  updateStateTrigger.subscribe((nextStage) => 
+  updateStateTrigger.subscribe((payload) => 
       { 
-        console.log("listening to state updates")
         let state = stateSubject.getValue();
-        stateSubject.next(updateState(state, nextStage))
+        stateSubject.next(updateState(state, payload))
     });
-
-
-    stateSubject.subscribe((newState) => console.log(newState.stateIndex));
 
   return stateObs;
 }
