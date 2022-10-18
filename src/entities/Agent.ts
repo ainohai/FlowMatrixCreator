@@ -1,13 +1,10 @@
-import { GridType } from './Grid';
 import { getCurrentGridPosition, isOnSameGridPoint } from '../utils/gridUtil';
 import { config } from '../config';
-import { CanvasSettings } from '../stateHandling/stateHandler';
 import { addOffset, getRandomFloat, getRandomInt } from '../utils/mathUtils';
-import {
-  colorByVelocity, Rgb,
-} from '../utils/utils';
 import { MagnetPoint } from './MagnetPoint';
 import { ArtVector } from './ArtVector';
+import { colorByVelocity } from '../utils/utils';
+import { AgentType, CanvasSettings, GridType, Rgb } from '../types';
 
 const {
   DEFAULT_LIFESPAN,
@@ -21,17 +18,6 @@ const {
   MAXIMUM_ACC,
 } = config;
 
-export type AgentType = {
-  position: ArtVector;
-  velocity: ArtVector;
-  lifespanInFrames: number;
-  color: Rgb | ((agent: AgentType, canvas: CanvasSettings) => Rgb);
-  strokeWidth: number;
-  //Todo: Do we really want/need this at all.
-  previousPos: ArtVector;
-  acceleration?: ArtVector;
-  isAlive: boolean;
-};
 
 const getDefaultSettings = () => ({
   lifespanInFrames: DEFAULT_LIFESPAN,

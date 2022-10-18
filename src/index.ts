@@ -3,18 +3,12 @@ import { Subject } from 'rxjs';
 import { config, StateOfArt } from './config';
 import { sketch } from './p5/sketch';
 import { stateHandler } from './stateHandling/stateHandler';
+import { Payload, UserAction } from './types';
 
 export enum ActionType {
     DRAW_AGENTS,
     CANCEL
 }
-
-export type UserAction = {
-   action: ActionType;
-   payload?: any;
-}
-
-export type Payload = {phaseDone? : boolean, reset?: boolean};
 
 const { BACKGROUND_COLOR } = config;
 

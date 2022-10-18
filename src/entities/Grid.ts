@@ -1,4 +1,5 @@
 import { config } from '../config';
+import { GridType, GridValue } from '../types';
 import { ArtVector, createVector } from './ArtVector';
 import { MagnetPoint } from './MagnetPoint';
 
@@ -8,15 +9,6 @@ const EXTRA_LEFT = 0;
 const EXTRA_RIGHT = 0;
 const EXTRA_TOP = 0;
 const EXTRA_BOTTOM = 0;
-
-export type GridValue = {
-  velocity: ArtVector;
-};
-
-export type GridType = {
-  gridSize: number; //How big each cell is
-  gridValues?: GridValue[][]; //[column][row]
-};
 
 const numberOfCols = (width: number, gridSize: number) =>
   Math.ceil((width * EXTRA_RIGHT + width + width * EXTRA_LEFT) / gridSize);

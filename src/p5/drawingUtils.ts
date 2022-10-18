@@ -1,11 +1,8 @@
-import { AgentType } from '../entities/Agent';
-import { GridType } from '../entities/Grid';
 import * as p5 from 'p5';
 import { getLocationOfCell } from '../utils/gridUtil';
 import { config } from '../config';
-import { CanvasSettings } from '../stateHandling/stateHandler';
 import { MagnetPoint } from '../entities/MagnetPoint';
-import { Rgb } from '../utils/utils';
+import { AgentType, CanvasSettings, GridType, Rgb } from '../types';
 
 const { HELPER_GRID_SIZE, COLOR_PALETTE, MAGNET_STRENGTH_MAX } = config;
 
@@ -82,11 +79,6 @@ export function* drawHelperMatrix(grid: GridType, p5: p5) {
     }
     yield;
   }
-  //draw palette
-  for (let i = 0; i < COLOR_PALETTE.length; i++) {
-    p5.fill(rgbToP5Color(p5, COLOR_PALETTE[i]));
-    p5.circle(10 + i * 10, 10, 10);
-  }
 }
 
 /**
@@ -107,6 +99,11 @@ export function drawMagnetPoints(p5: p5, magnets: MagnetPoint[]) {
       magnet.locationY
     );
     p5.circle(magnet.locationX, magnet.locationY, Math.abs(magnet.strength));
+  }
+  //draw palette
+  for (let i = 0; i < COLOR_PALETTE.length; i++) {
+    p5.fill(rgbToP5Color(p5, COLOR_PALETTE[i]));
+    p5.circle(10 + i * 10, 10, 10);
   }
 }
 

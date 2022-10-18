@@ -1,4 +1,3 @@
-import { GridType } from '../entities/Grid';
 import {
   angleOfLineBetweenPoints,
   distanceBetweenPoints,
@@ -6,6 +5,7 @@ import {
 import { config } from '../config';
 import { MagnetPoint } from '../entities/MagnetPoint';
 import { ArtVector, createVectorByAngle } from '../entities/ArtVector';
+import { GridType } from '../types';
 
 const { FORCE_MULTIPLIER } = config;
 

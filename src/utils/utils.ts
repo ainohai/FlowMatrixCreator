@@ -1,23 +1,10 @@
 import { config } from '../config';
 import * as p5 from 'p5';
-import { CanvasSettings } from '../stateHandling/stateHandler';
-import { AgentType } from '../entities/Agent';
 import { mapToBoundaries } from './mathUtils';
+import { AgentType, CanvasSettings, Rgb } from '../types';
 
 const { COLOR_PALETTE, MAXIMUM_ACC } = config;
 
-export type Rgb = {
-  r: number;
-  g: number;
-  b: number;
-  opacity?: number;
-};
-
-export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
-  return opacity
-    ? p5.color(color.r, color.g, color.b, opacity)
-    : p5.color(color.r, color.g, color.b, color.opacity ?? 100);
-};
 
 ///Test function for selecting color
 /*const getRandomColor = (p5: p5, agent: AgentType) => {

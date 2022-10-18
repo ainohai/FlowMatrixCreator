@@ -1,8 +1,8 @@
 import * as p5 from 'p5';
 import { renderer } from './renderer';
 import { config, StateOfArt } from '../config';
-import { State } from '../stateHandling/stateHandler';
-import { Payload, stateObserver, triggerStateUpdate, triggerUserActions } from '..';
+import { stateObserver, triggerStateUpdate, triggerUserActions } from '..';
+import { Payload, State } from '../types';
 
 
 /**TODO:

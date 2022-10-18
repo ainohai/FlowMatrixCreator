@@ -1,6 +1,5 @@
-import { fillGridUsingFunction, gridFactory, GridType } from '../entities/Grid';
+import { fillGridUsingFunction, gridFactory } from '../entities/Grid';
 import {
-  AgentType,
   checkIfAgentAlive,
   createDummyAgents,
   moveAgent,
@@ -13,26 +12,13 @@ import {
   getSinks,
   MagnetPoint,
 } from '../entities/MagnetPoint';
-import { Rgb } from '../utils/utils';
+import { AgentType, CanvasSettings, GridType, Rgb, State } from '../types';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { Payload } from '..';
+import { Payload } from '../types';
 import { getScheme } from '../utils/colorUtil';
 
 
 const { TOTAL_BURSTS, USED_STATES, MIN_AGENTS, COLOR_PALETTE } = config;
-
-export type State = {
-  grid: GridType;
-  agents: AgentType[];
-  canvas: CanvasSettings;
-  stateIndex: number;
-  magnets: MagnetPoint[];
-};
-export type CanvasSettings = {
-  height?: number;
-  width?: number;
-  color?: Rgb;
-};
 
 export const stateHandler = function(windowWidth: number, windowHeight: number, backgroundColor: Rgb, updateStateTrigger: Subject<Payload>) {
   let agentBurst = 0;

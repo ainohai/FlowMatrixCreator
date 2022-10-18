@@ -1,5 +1,3 @@
-import { GridType } from '../entities/Grid';
-import { AgentType } from '../entities/Agent';
 import {
   drawAgent,
   drawHelperMatrix,
@@ -7,10 +5,9 @@ import {
   drawMagnetPoints,
 } from './drawingUtils';
 import * as p5 from 'p5';
-import { CanvasSettings } from '../stateHandling/stateHandler';
 import { config } from '../config';
 import { MagnetPoint } from '../entities/MagnetPoint';
-import { Rgb } from '../utils/utils';
+import { AgentType, CanvasSettings, GridType, Rgb } from '../types';
 
 const { BACKGROUND_COLOR, FADING } = config;
 
