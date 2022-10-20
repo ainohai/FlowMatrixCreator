@@ -20,15 +20,18 @@ export const config = {
   //In future it would be nice to let user decide from UI if they want to draw helpers or not.
   USED_STATES: [
     StateOfArt.SETUP,
-    //StateOfArt.DRAW_GRID,
+    StateOfArt.DRAW_GRID,
     //StateOfArt.DRAW_HELPER_GRID,
     StateOfArt.DRAW_MAGNETS,
-    StateOfArt.CONFIRM_DRAW,
-    StateOfArt.CLEAR_SCREEN,
+    //StateOfArt.CONFIRM_DRAW,
+    //StateOfArt.CLEAR_SCREEN,
     StateOfArt.DRAW_AGENTS,
     StateOfArt.END,
     StateOfArt.RESET,
   ] as StateOfArt[],
+
+  CANVAS_WIDTH: window.innerWidth,
+  CANVAS_HEIGHT: window.innerHeight,
 
   TOTAL_BURSTS: 200,
   BURST_SIZE: 500,

@@ -1,6 +1,6 @@
 import { config } from '../config';
-import { GridType, GridValue } from '../types';
-import { ArtVector, createVector } from './ArtVector';
+import { createVector } from './ArtVector';
+import { GridType, GridValue } from './entityTypes';
 import { MagnetPoint } from './MagnetPoint';
 
 const { GRID_SIZE } = config;

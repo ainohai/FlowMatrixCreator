@@ -4,27 +4,23 @@ import { addOffset, getRandomFloat, getRandomInt } from '../utils/mathUtils';
 import { MagnetPoint } from './MagnetPoint';
 import { ArtVector } from './ArtVector';
 import { colorByVelocity } from '../utils/utils';
-import { AgentType, CanvasSettings, GridType, Rgb } from '../types';
+import { settings } from '../userInput/configInput';
+import { CanvasSettings } from '../stateHandling/reducers/drawingStateReducer';
+import { AgentType, GridType, Rgb } from './entityTypes';
 
 const {
-  DEFAULT_LIFESPAN,
   FRICTION_MULTIPLIER,
-  MAX_STROKE,
-  MAXIMUM_VELOCITY,
-  BURST_SIZE,
   OFFSET,
   ADD_TO_OLD_VELOCITY,
-  RANDOM_START,
-  MAXIMUM_ACC,
 } = config;
 
 
 const getDefaultSettings = () => ({
-  lifespanInFrames: DEFAULT_LIFESPAN,
+  lifespanInFrames: settings.DEFAULT_LIFESPAN,
   color: (agent: AgentType, canvas: CanvasSettings) =>
     //Todo: Should be given in config.
     colorByVelocity(agent, canvas),
-  strokeWidth: getRandomFloat(MAX_STROKE),
+  strokeWidth: getRandomFloat(settings.MAX_STROKE),
   acceleration: new ArtVector(0, 0),
   isAlive: true,
 });
@@ -72,7 +68,7 @@ export const updateAcceleration = (
     ? agent.acceleration.copy().addMe(gridVelocity) 
     : gridVelocity.copy();
 
-  steer.limitMe(MAXIMUM_ACC);
+  steer.limitMe(settings.MAXIMUM_ACC);
   agent.acceleration = steer;
 };
 
@@ -86,7 +82,7 @@ const updateVelocity = (agent: AgentType, addToOldVelocity: boolean) => {
   } else {
     agent.velocity = agent.acceleration.copy();
   }
-  agent.velocity.limitMe(MAXIMUM_VELOCITY);
+  agent.velocity.limitMe(settings.MAXIMUM_VELOCITY);
 };
 
 export const moveAgent = (
@@ -155,13 +151,13 @@ const getStartingPoint = (
 export const createDummyAgents = (
   magnets: MagnetPoint[],
   canvas: CanvasSettings,
-  numOfAgents = BURST_SIZE,
+  numOfAgents = settings.BURST_SIZE,
   color?: (agent: AgentType, canvas: CanvasSettings) => Rgb
 ): AgentType[] => {
   const agents = [];
 
   for (let i = 0; i < numOfAgents; i++) {
-    const point = RANDOM_START
+    const point = settings.RANDOM_START
       ? {
           locationX: getRandomInt(canvas.width),
           locationY: getRandomInt(canvas.height),

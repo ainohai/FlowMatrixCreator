@@ -1,7 +1,7 @@
 import { getRandomInt } from "./mathUtils";
 import * as ColorScheme from 'color-scheme';
 import hexRgb, { RgbaObject } from 'hex-rgb';
-import { Rgb } from "../types";
+import { Rgb } from "../entities/entityTypes";
 
 
 export const paletteSchemes = ['mono', 'contrast', 'triade', 'tetrade', 'analogic'];

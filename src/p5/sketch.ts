@@ -1,8 +1,10 @@
 import * as p5 from 'p5';
 import { renderer } from './renderer';
 import { config, StateOfArt } from '../config';
-import { stateObserver, triggerStateUpdate, triggerUserActions } from '..';
-import { Payload, State } from '../types';
+import { DrawingActionType, DrawingState, Payload } from '../stateHandling/reducers/drawingStateReducer';
+import { drawingStore } from '../stateHandling/storeHandler';
+import { State } from '../stateHandling/store';
+import { take } from 'rxjs';
 
 
 /**TODO:
@@ -38,56 +40,68 @@ import { Payload, State } from '../types';
  */
 const { USED_STATES } = config;
 
-export const sketch = function (p5: p5) {
+let state: DrawingState;
+
+const sketch = function (p5: p5) {
   const render = renderer(p5);
 
-  let state;
-  stateObserver().subscribe((value) => state = value );
-
-  let renderState = (renderState: State): Payload => {
+  let renderState = (renderState: DrawingState): Payload => {
     const { grid, agents, stateIndex, canvas, magnets } = renderState;
-        //todo: Some other solution?
-        let payload = {};
-        switch (USED_STATES[stateIndex]) {
-          case StateOfArt.DRAW_GRID:
-            let gridDone = render.grid(grid);
-            payload = { phaseDone: gridDone };
-            break;
-          case StateOfArt.DRAW_HELPER_GRID:
-            render.helperLines(canvas);
-            break;
-          case StateOfArt.DRAW_MAGNETS:
-            render.magnetPoints(magnets);
-            break;
-          case StateOfArt.CLEAR_SCREEN:
-            render.clearScreen(canvas.color);  
-            break;
-          case StateOfArt.DRAW_AGENTS:
-            render.agents(agents, canvas);
-            break;
-          case StateOfArt.END:
-            console.log('done'); //DEBUG
-            break;
-          case StateOfArt.RESET:
-            render.reset(canvas.color);
-            break;  
-        }
-  
-      return payload;
+    //todo: Some other solution?
+    let payload = {};
+    switch (USED_STATES[stateIndex]) {
+      case StateOfArt.DRAW_GRID:
+        let gridDone = render.grid(grid);
+        payload = { phaseDone: gridDone };
+        break;
+      case StateOfArt.DRAW_HELPER_GRID:
+        render.helperLines(canvas);
+        break;
+      case StateOfArt.DRAW_MAGNETS:
+        render.magnetPoints(magnets);
+        break;
+      case StateOfArt.CLEAR_SCREEN:
+        render.clearScreen(canvas.color);
+        break;
+      case StateOfArt.DRAW_AGENTS:
+        render.agents(agents, canvas);
+        break;
+      case StateOfArt.END:
+        console.log('done'); //DEBUG
+        break;
+      case StateOfArt.RESET:
+        render.reset(canvas.color);
+        break;
+    }
+
+    return payload;
   }
 
   p5.setup = () => {
-    
+
+
+
+    console.log(`state: ${state.toString()}`);
     render.canvas(state.canvas);
-    //TODO: not so good way to give index directly here. Change this. 
-    triggerStateUpdate().next({});
+
+    drawingStore.dispatch({ type: DrawingActionType.SETUP_DRAW })
   };
 
   // Main render loop
   p5.draw = () => {
-    
+
     let payload = renderState(state)
-    triggerStateUpdate().next(payload);
+
+    drawingStore.dispatch({ type: DrawingActionType.SETUP_DRAW, payload: payload })
   };
 };
+
+export const render = function () {
+  const init$ = drawingStore.state$.pipe(take(1))
+  init$.subscribe(newState => {
+    new p5(sketch, document.getElementById('p5-container'));
+  })
+  drawingStore.state$.subscribe({next(newState) {state = newState as DrawingState }})
+}
+
 

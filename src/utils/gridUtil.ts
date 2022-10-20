@@ -5,7 +5,7 @@ import {
 import { config } from '../config';
 import { MagnetPoint } from '../entities/MagnetPoint';
 import { ArtVector, createVectorByAngle } from '../entities/ArtVector';
-import { GridType } from '../types';
+import { GridType } from '../entities/entityTypes';
 
 const { FORCE_MULTIPLIER } = config;
 

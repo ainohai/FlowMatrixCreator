@@ -1,17 +1,26 @@
-let button = document.getElementById("button-next")
-button.addEventListener('click', (event) => {
-  console.log("I was clicked");}); 
-  
-export const confirmDrawingAgents = function(okPressed: () => void, cancelPressed: () => void) {
+/*import { Subject } from "rxjs";
+import { html, render } from 'htm/preact';
+import { Payload } from "../stateHandling/reducers/drawingStateReducer";
 
-    /*let OKbutton = p5.createButton('OK');
-    OKbutton.position(width/2 - 100, height/2);
-    OKbutton.mousePressed(() => okPressed());
-    OKbutton.size(100);
-    let cancelButton = p5.createButton('Cancel');
-    cancelButton.position(width/2 + 10, height/2);
-    cancelButton.size(100);
-    cancelButton.mousePressed(() => cancelPressed());
-    */
-  }
 
+export const controlButtons = function (triggerStateUpdate: Subject<Payload>) {
+
+
+    render(html`<a href="/">Hello!</a>`, document.body);
+    let button = document.getElementById("button-draw")
+    button.addEventListener('click', (event) => {
+      triggerStateUpdate.next({phaseDone : true}); 
+    })
+    
+    let resetButton = document.getElementById("button-reset")
+    resetButton.addEventListener('click', (event) => {
+      triggerStateUpdate.next({action: "reset"}); 
+    })
+
+    let stopButton = document.getElementById("button-stop")
+    stopButton.addEventListener('click', (event) => {
+      triggerStateUpdate.next({action: "stop"}); 
+    })
+}
+*/
+export default {}

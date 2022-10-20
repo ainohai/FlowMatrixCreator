@@ -1,7 +1,8 @@
 import { config } from '../config';
+import { settings } from '../userInput/configInput';
 import { getRandomInt, getRandomPosOrNegInt } from '../utils/mathUtils';
 
-const { NUM_OF_MAGNETS, MAGNET_STRENGTH_MAX } = config;
+const { MAGNET_STRENGTH_MAX } = config;
 
 export type MagnetPoint = {
   locationX: number;
@@ -20,7 +21,7 @@ export const dummyMagnet = (xMax: number, yMax: number) => {
 export const createMagnets = (
   width: number,
   height: number,
-  numOfMagnets = NUM_OF_MAGNETS
+  numOfMagnets = settings.NUM_OF_MAGNETS
 ): MagnetPoint[] => {
   const magnets = [];
   for (let i = 0; i < numOfMagnets; i++) {
