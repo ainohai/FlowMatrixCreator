@@ -11,6 +11,7 @@ import { UserActionState } from "../stateHandling/reducers/userActionReducer";
 import { MagnetPoint } from "../entities/MagnetPoint";
 import { Magnets } from "./components/Magnets";
 import settingsStore from "../stateHandling/storeCreators/settingsStore";
+import { CreateUrl } from "./components/CreateUrl";
 
 
 // Types for props
@@ -47,7 +48,6 @@ class ControlButtons extends Component<ControlProps, ControlState> {
       this.props.drawing$.pipe(map((state: DrawingState) => state.magnets))])//, distinctUntilChanged()))//Possibly always distinct as an object 
       .subscribe(
         (state) => {
-          console.log(`index: ${state[0]}`);
           this.setState({ stateIndex: state[0] })
         });
     let settingsSub = this.props.settings$.subscribe(
@@ -70,8 +70,8 @@ class ControlButtons extends Component<ControlProps, ControlState> {
         <Buttons stateOfArt={this.state.usedStates[this.state.stateIndex]}
           dispatch={this.props.drawingDispatch}
           userActionDispatch={this.props.userActionDispatch} />
-        {settingsStore.last().SHOW_CONTROLS && <Magnets/> }
-        {(this.state.usedStates[this.state.stateIndex] === StateOfArt.END) && <span>Done</span>}
+        {settingsStore.last().SHOW_CONTROLS && <div><Magnets/><CreateUrl/></div>}
+        {(this.state.usedStates[this.state.stateIndex] === StateOfArt.END) && <span style={{padding: "8px", backgroundColor: "white"}}>Finished drawing!</span>}
       </div>
     );
   }
