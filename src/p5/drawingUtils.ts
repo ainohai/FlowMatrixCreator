@@ -1,12 +1,9 @@
 import * as p5 from 'p5';
 import { getLocationOfCell } from '../utils/gridUtil';
-import { config } from '../config';
 import { MagnetPoint } from '../entities/MagnetPoint';
-import { settings } from '../userInput/configInput';
 import { AgentType, GridType, Rgb } from '../entities/entityTypes';
-import { CanvasSettings } from '../stateHandling/reducers/drawingStateReducer';
-
-const { HELPER_GRID_SIZE, MAGNET_STRENGTH_MAX } = config;
+import { CanvasSettings } from '../settingTypes';
+import { settings } from '../stateHandling/storeCreators/settingsStore';
 
 export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
   return opacity
@@ -18,10 +15,10 @@ export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
  * Draws horizontal and vertical lines.
  */
 export const drawHelpGrid = (p5: p5, canvas: CanvasSettings) => {
-  for (let i = 0; i < canvas.width; i += HELPER_GRID_SIZE) {
+  for (let i = 0; i < canvas.width; i += settings().HELPER_GRID_SIZE) {
     p5.line(i, 0, i, canvas.height);
   }
-  for (let i = 0; i < canvas.height; i += HELPER_GRID_SIZE) {
+  for (let i = 0; i < canvas.height; i += settings().HELPER_GRID_SIZE) {
     p5.line(0, i, canvas.width, i);
   }
 };
@@ -92,20 +89,15 @@ export function drawMagnetPoints(p5: p5, magnets: MagnetPoint[]) {
   for (let magnet of magnets) {
     p5.fill(
       magnet.strength < 0
-        ? rgbToP5Color(p5, settings.COLOR_PALETTE[0])
-        : rgbToP5Color(p5, settings.COLOR_PALETTE[settings.COLOR_PALETTE.length - 1])
+        ? rgbToP5Color(p5, settings().COLOR_PALETTE[0])
+        : rgbToP5Color(p5, settings().COLOR_PALETTE[settings().COLOR_PALETTE.length - 1])
     );
     p5.text(
       `x: ${magnet.locationX}, y: ${magnet.locationY}, mag: ${magnet.strength}`,
-      magnet.locationX + MAGNET_STRENGTH_MAX,
+      magnet.locationX + settings().MAGNET_STRENGTH_MAX,
       magnet.locationY
     );
     p5.circle(magnet.locationX, magnet.locationY, Math.abs(magnet.strength));
-  }
-  //draw palette
-  for (let i = 0; i < settings.COLOR_PALETTE.length; i++) {
-    p5.fill(rgbToP5Color(p5, settings.COLOR_PALETTE[i]));
-    p5.circle(10 + i * 10, 10, 10);
   }
 }
 

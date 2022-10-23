@@ -10,6 +10,11 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "isolatedModules": true,
-    "exactOptionalPropertyTypes":false
+    "exactOptionalPropertyTypes":false,
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "lib": ["es2017",
+    "DOM"]
   }
 }

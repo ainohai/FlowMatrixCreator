@@ -1,33 +1,41 @@
-import { BehaviorSubject, Observable, Subject, Subscription } from "rxjs";
-import { scan, startWith } from "rxjs/operators";
-import { UserActionType } from "./reducers/settingsReducer";
+import { Observable, Subject } from "rxjs";
+import { scan } from "rxjs/operators";
+
+//TODO: Store related types need overall fixing 
 
 export interface State {}
 
-export interface Action {}
+export interface Action<T> {}
 
-export interface Reducer {(
-    previousState: State,
-    action: Action,
-    ) : State;
+/**
+ * Takes in action, returns the new state. 
+ * @param state: current application state
+ * @param action: action fired in the application
+ * @returns state: the new application state
+ */
+export interface Reducer<T extends State> {(
+    previousState: T,
+    action: Action<T>,
+    ) : T;
 }
 
-export type Dispatch = (action: Action) => void;
+export type Dispatch<T> = (action: Action<T>) => void;
 
-export interface Store {
-    dispatch: Dispatch;
-    state$: Observable<State>;
-    }
+export interface Store<T extends State> {
+    dispatch: Dispatch<T>;
+    state$: Observable<T>;
+    last: () => T;
+}
 
-export interface Epic { 
-    (action$: Observable<Action>,
-    state$?: Observable<State>) : Observable<Action>
+export interface Epic<T extends State> { 
+    (action$: Observable<Action<T>>,
+    state$?: Observable<State>) : Observable<Action<T>>
   };
 
-const createStore = (reducer: Reducer, epics?: Epic): Store => {
-  const action$ = new Subject<Action>();
+const createStore = <T>(reducer: Reducer<T>, epics?: Epic<T>): Store<T> => {
+  const action$ = new Subject<Action<T>>();
 
-  let last: State = {};
+  let last: T;
 
   // Each dispatched action will be reduced by the reducer.
   const state$ = action$.pipe(
@@ -43,7 +51,8 @@ const createStore = (reducer: Reducer, epics?: Epic): Store => {
 
   return {
     dispatch: action$.next.bind(action$),
-    state$: state$
+    state$: state$,
+    last: () => last
   };
 };
 

@@ -1,4 +1,4 @@
-import { CanvasSettings } from "../stateHandling/reducers/drawingStateReducer";
+import { CanvasSettings } from "../settingTypes";
 import { ArtVector } from "./ArtVector";
 
 export type Rgb = {

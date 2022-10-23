@@ -1,10 +1,10 @@
 import * as p5 from 'p5';
 import { renderer } from './renderer';
-import { config, StateOfArt } from '../config';
 import { DrawingActionType, DrawingState, Payload } from '../stateHandling/reducers/drawingStateReducer';
-import { drawingStore } from '../stateHandling/storeHandler';
-import { State } from '../stateHandling/store';
-import { take } from 'rxjs';
+import settingsStore, { settings } from '../stateHandling/storeCreators/settingsStore';
+import { combineLatest, filter, map, subscribeOn, take } from 'rxjs';
+import { StateOfArt } from '../settingTypes';
+import drawingStore from '../stateHandling/storeCreators/drawingStore';
 
 
 /**TODO:
@@ -32,24 +32,24 @@ import { take } from 'rxjs';
  * 11. Make it art.
  **/
 
+//TODO: this is clumsy. 
+let loopingOn;
 
 /**
  * @return true if can move to next state
  * @param state
  * @param p5
  */
-const { USED_STATES } = config;
-
-let state: DrawingState;
-
 const sketch = function (p5: p5) {
   const render = renderer(p5);
+
+  loopingOn = () => p5.loop();
 
   let renderState = (renderState: DrawingState): Payload => {
     const { grid, agents, stateIndex, canvas, magnets } = renderState;
     //todo: Some other solution?
     let payload = {};
-    switch (USED_STATES[stateIndex]) {
+    switch (settings().USED_STATES[stateIndex]) {
       case StateOfArt.DRAW_GRID:
         let gridDone = render.grid(grid);
         payload = { phaseDone: gridDone };
@@ -68,20 +68,19 @@ const sketch = function (p5: p5) {
         break;
       case StateOfArt.END:
         console.log('done'); //DEBUG
+        p5.noLoop();
         break;
       case StateOfArt.RESET:
         render.reset(canvas.color);
         break;
     }
-
     return payload;
   }
 
   p5.setup = () => {
 
+    let state = drawingStore.last();
 
-
-    console.log(`state: ${state.toString()}`);
     render.canvas(state.canvas);
 
     drawingStore.dispatch({ type: DrawingActionType.SETUP_DRAW })
@@ -90,6 +89,7 @@ const sketch = function (p5: p5) {
   // Main render loop
   p5.draw = () => {
 
+    let state = drawingStore.last();
     let payload = renderState(state)
 
     drawingStore.dispatch({ type: DrawingActionType.SETUP_DRAW, payload: payload })
@@ -97,11 +97,15 @@ const sketch = function (p5: p5) {
 };
 
 export const render = function () {
+  let p5Instance: p5;
   const init$ = drawingStore.state$.pipe(take(1))
   init$.subscribe(newState => {
-    new p5(sketch, document.getElementById('p5-container'));
+    p5Instance = new p5(sketch, document.getElementById('p5-container'));
   })
-  drawingStore.state$.subscribe({next(newState) {state = newState as DrawingState }})
+  
+  const stateIndex$ = drawingStore.state$.pipe(map((state) => state.stateIndex));
+  const usedStates$ = settingsStore.state$.pipe(map((state) => state.USED_STATES));
+  const restart$ = combineLatest([stateIndex$, usedStates$])
+  .pipe(filter(([index, usedStates]) => StateOfArt.RESET === usedStates[index]))
+  .subscribe(() => loopingOn());
 }
-
-

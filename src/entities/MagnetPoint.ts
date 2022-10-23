@@ -1,8 +1,5 @@
-import { config } from '../config';
-import { settings } from '../userInput/configInput';
+import { settings } from '../stateHandling/storeCreators/settingsStore';
 import { getRandomInt, getRandomPosOrNegInt } from '../utils/mathUtils';
-
-const { MAGNET_STRENGTH_MAX } = config;
 
 export type MagnetPoint = {
   locationX: number;
@@ -14,14 +11,14 @@ export const dummyMagnet = (xMax: number, yMax: number) => {
   return {
     locationX: getRandomInt(xMax),
     locationY: getRandomInt(yMax),
-    strength: getRandomPosOrNegInt(MAGNET_STRENGTH_MAX),
+    strength: getRandomPosOrNegInt(settings().MAGNET_STRENGTH_MAX),
   };
 };
 
 export const createMagnets = (
   width: number,
   height: number,
-  numOfMagnets = settings.NUM_OF_MAGNETS
+  numOfMagnets = settings().NUM_OF_MAGNETS
 ): MagnetPoint[] => {
   const magnets = [];
   for (let i = 0; i < numOfMagnets; i++) {

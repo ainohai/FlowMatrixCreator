@@ -2,12 +2,10 @@ import {
   angleOfLineBetweenPoints,
   distanceBetweenPoints,
 } from './mathUtils';
-import { config } from '../config';
 import { MagnetPoint } from '../entities/MagnetPoint';
 import { ArtVector, createVectorByAngle } from '../entities/ArtVector';
 import { GridType } from '../entities/entityTypes';
-
-const { FORCE_MULTIPLIER } = config;
+import { settings } from '../stateHandling/storeCreators/settingsStore';
 
 export type Location = {
   x: number;
@@ -83,7 +81,7 @@ export const calculateForces = (
       magnet.locationY
     );
 
-    const strength = (FORCE_MULTIPLIER * magnet.strength) / distance;
+    const strength = (settings().FORCE_MULTIPLIER * magnet.strength) / distance;
 
     const strengthVector: ArtVector = createVectorByAngle(angle, strength);
     effectOfMagnetPoint = !!effectOfMagnetPoint

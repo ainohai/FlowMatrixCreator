@@ -1,9 +1,8 @@
-import { config } from '../config';
+import { settings } from '../stateHandling/storeCreators/settingsStore';
 import { createVector } from './ArtVector';
 import { GridType, GridValue } from './entityTypes';
 import { MagnetPoint } from './MagnetPoint';
 
-const { GRID_SIZE } = config;
 
 const EXTRA_LEFT = 0;
 const EXTRA_RIGHT = 0;
@@ -18,10 +17,11 @@ const numberOfRows = (height: number, gridSize: number) =>
 export const gridFactory = (
   width: number,
   height: number,
-  gridSize = GRID_SIZE
+  gridSize?: number
 ): GridType => {
   //Creating empty grid. Note that for... in loops only set indexes, for... of loops all.
   const gridValues = [];
+  gridSize = gridSize ?? settings().GRID_SIZE;
   const numOfCols = numberOfCols(width, gridSize);
   const numOfRows = numberOfRows(height, gridSize);
 

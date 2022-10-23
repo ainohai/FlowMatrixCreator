@@ -1,26 +1,18 @@
 import { getCurrentGridPosition, isOnSameGridPoint } from '../utils/gridUtil';
-import { config } from '../config';
 import { addOffset, getRandomFloat, getRandomInt } from '../utils/mathUtils';
 import { MagnetPoint } from './MagnetPoint';
 import { ArtVector } from './ArtVector';
 import { colorByVelocity } from '../utils/utils';
-import { settings } from '../userInput/configInput';
-import { CanvasSettings } from '../stateHandling/reducers/drawingStateReducer';
+import { CanvasSettings } from '../settingTypes';
 import { AgentType, GridType, Rgb } from './entityTypes';
-
-const {
-  FRICTION_MULTIPLIER,
-  OFFSET,
-  ADD_TO_OLD_VELOCITY,
-} = config;
-
+import { settings } from '../stateHandling/storeCreators/settingsStore';
 
 const getDefaultSettings = () => ({
-  lifespanInFrames: settings.DEFAULT_LIFESPAN,
+  lifespanInFrames: settings().DEFAULT_LIFESPAN,
   color: (agent: AgentType, canvas: CanvasSettings) =>
     //Todo: Should be given in config.
     colorByVelocity(agent, canvas),
-  strokeWidth: getRandomFloat(settings.MAX_STROKE),
+  strokeWidth: getRandomFloat(settings().MAX_STROKE),
   acceleration: new ArtVector(0, 0),
   isAlive: true,
 });
@@ -64,11 +56,11 @@ export const updateAcceleration = (
 
   const gridVelocity = position.velocity;
 
-  let steer: ArtVector = ADD_TO_OLD_VELOCITY
+  let steer: ArtVector = settings().ADD_TO_OLD_VELOCITY
     ? agent.acceleration.copy().addMe(gridVelocity) 
     : gridVelocity.copy();
 
-  steer.limitMe(settings.MAXIMUM_ACC);
+  steer.limitMe(settings().MAXIMUM_ACC);
   agent.acceleration = steer;
 };
 
@@ -77,18 +69,18 @@ export const updateAcceleration = (
  */
 const updateVelocity = (agent: AgentType, addToOldVelocity: boolean) => {
   if (addToOldVelocity) {
-    agent.velocity = agent.velocity.multiplyMe(FRICTION_MULTIPLIER);
+    agent.velocity = agent.velocity.multiplyMe(settings().FRICTION_MULTIPLIER);
     agent.velocity.addMe(agent.acceleration);
   } else {
     agent.velocity = agent.acceleration.copy();
   }
-  agent.velocity.limitMe(settings.MAXIMUM_VELOCITY);
+  agent.velocity.limitMe(settings().MAXIMUM_VELOCITY);
 };
 
 export const moveAgent = (
   agent: AgentType,
   grid: GridType,
-  addToOldVelocity = ADD_TO_OLD_VELOCITY
+  addToOldVelocity = settings().ADD_TO_OLD_VELOCITY
 ) => {
   agent.lifespanInFrames--;
   agent.previousPos = agent.position.copy();
@@ -143,21 +135,21 @@ const getStartingPoint = (
         };
 
   return {
-    locationX: addOffset(point.locationX, OFFSET, canvas.width),
-    locationY: addOffset(point.locationY, OFFSET, canvas.height),
+    locationX: addOffset(point.locationX, settings().OFFSET, canvas.width),
+    locationY: addOffset(point.locationY, settings().OFFSET, canvas.height),
   };
 };
 
 export const createDummyAgents = (
   magnets: MagnetPoint[],
   canvas: CanvasSettings,
-  numOfAgents = settings.BURST_SIZE,
+  numOfAgents = settings().BURST_SIZE,
   color?: (agent: AgentType, canvas: CanvasSettings) => Rgb
 ): AgentType[] => {
   const agents = [];
 
   for (let i = 0; i < numOfAgents; i++) {
-    const point = settings.RANDOM_START
+    const point = settings().RANDOM_START
       ? {
           locationX: getRandomInt(canvas.width),
           locationY: getRandomInt(canvas.height),

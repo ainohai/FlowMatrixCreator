@@ -1,39 +1,32 @@
+import { SettingsState, StateOfArt } from './settingTypes';
 import { getScheme } from './utils/colorUtil';
 
-export enum StateOfArt {
-  SETUP = "SETUP",
-  DRAW_GRID = "DRAW_GRID",
-  DRAW_AGENTS = "DRAW_AGENTS",
-  DRAW_HELPER_GRID= "DRAW_HELPER_GRID" ,
-  DRAW_MAGNETS = "DRAW_MAGNETS",
-  CONFIRM_DRAW = "CONFIRM_DRAW",
-  CLEAR_SCREEN ="CLEAR_SCREEN",
-  PAUSE = "PAUSE",
-  RESET ="RESET",
-  END ="END",
-}
-
 //default configurations
-export const config = {
+export const config: SettingsState = {
 
   //In execution order.
   //In future it would be nice to let user decide from UI if they want to draw helpers or not.
   USED_STATES: [
     StateOfArt.SETUP,
-    StateOfArt.DRAW_GRID,
+    //StateOfArt.DRAW_GRID,
     //StateOfArt.DRAW_HELPER_GRID,
-    StateOfArt.DRAW_MAGNETS,
+    //StateOfArt.DRAW_MAGNETS,
     //StateOfArt.CONFIRM_DRAW,
     //StateOfArt.CLEAR_SCREEN,
     StateOfArt.DRAW_AGENTS,
     StateOfArt.END,
     StateOfArt.RESET,
+    StateOfArt.CONFIRM_DRAW,
+    StateOfArt.CLEAR_SCREEN,
   ] as StateOfArt[],
 
   CANVAS_WIDTH: window.innerWidth,
   CANVAS_HEIGHT: window.innerHeight,
 
-  TOTAL_BURSTS: 200,
+  SHOW_CONTROLS: true,
+  SHOW_BUTTONS: true,
+
+  TOTAL_BURSTS: 100,
   BURST_SIZE: 500,
   OFFSET: 50,
   MIN_AGENTS: 200,
@@ -42,7 +35,7 @@ export const config = {
   GRID_SIZE: 10, //px
   HELPER_GRID_SIZE: 100, //px
 
-  NUM_OF_MAGNETS: 4,
+  NUM_OF_MAGNETS: 2,
   MAGNET_STRENGTH_MAX: 30,
   //Multiplier constant. Similar to G in gravity calculations.
   FORCE_MULTIPLIER: 10,

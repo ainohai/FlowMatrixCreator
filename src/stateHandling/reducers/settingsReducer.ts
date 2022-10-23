@@ -1,9 +1,9 @@
-import { Observable } from "rxjs";
 import { config } from "../../config";
-import { Action, State } from "../store";
+import { SettingsState } from "../../settingTypes";
+import { Action, Reducer, State } from "../store";
 
 
-export enum UserActionType {
+/*export enum UserActionType {
     DRAW_AGENTS,
     CANCEL,
     VALUE_CHANGE
@@ -12,47 +12,40 @@ export enum UserActionType {
 export interface UserAction extends Action {
     type: UserActionType;
     payload?: any;
- }
+ }*/
 
 export enum SettingsActionType {
     INIT, 
     VALUE_CHANGE
 }
 
-export interface SettingsAction extends Action {
+export interface SettingsAction extends Action<SettingsState> {
     type: SettingsActionType;
-    payload?: any;
+    payload?: {change?: {[key: string]:any}};
  }
   
 
- //todo
-export interface SettingsState extends State { 
-};
-
+//All the settings need to be in config file, so that in future we can have multiple config files.!
 const initialState: SettingsState = {...config};
 
-export const dummyReducer = (
+export const changeSettingValue = (
     previousState: SettingsState,
     action: SettingsAction
-  ): SettingsState => ({
+  ): SettingsState => 
+    ({
     ...previousState,
-    dummy: {...{changes: "my changes made"}}
+    ...action.payload.change
   });
 
-/**
- * Takes in action, returns the new state. 
- * @param state: current application state
- * @param action: action fired in the application
- * @returns state: the new application state
- */
-const settingsReducer = (
+
+const settingsReducer: Reducer<SettingsState> = (
   prevState: SettingsState = initialState,
    action: SettingsAction,
 ): SettingsState => {
 
   switch (action.type) {
     case SettingsActionType.VALUE_CHANGE:
-      return dummyReducer(prevState, action);
+      return changeSettingValue(prevState, action);
     default: 
       return prevState;
   }

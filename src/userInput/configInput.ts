@@ -1,16 +1,18 @@
 import * as dat from "dat.gui";
 import { Subject } from "rxjs";
 import { config } from "../config";
+import drawingStore from "../stateHandling/storeCreators/drawingStore";
+import { DrawingActionType } from "../stateHandling/reducers/drawingStateReducer";
+import { SettingsActionType } from "../stateHandling/reducers/settingsReducer";
+import settingsStore, { settings } from "../stateHandling/storeCreators/settingsStore";
 import { getScheme } from "../utils/colorUtil";
 
 
+const createInitialUISettings = () => {
 const { TOTAL_BURSTS,
     BURST_SIZE,
-    OFFSET,
     MIN_AGENTS,
-    RANDOM_START, GRID_SIZE, //px
-    HELPER_GRID_SIZE, //px
-
+    RANDOM_START, 
     NUM_OF_MAGNETS,
     MAGNET_STRENGTH_MAX,
     //Multiplier constant. Similar to G in gravity calculations..
@@ -25,9 +27,9 @@ const { TOTAL_BURSTS,
 
     COLOR_PALETTE,
     BACKGROUND_COLOR,
-    FADING } = config;
+    FADING } = settings();
 
-export const settings = {
+return {
     TOTAL_BURSTS: TOTAL_BURSTS,
     RANDOM_START: RANDOM_START,
     BURST_SIZE: BURST_SIZE,
@@ -47,28 +49,32 @@ export const settings = {
     COLOR_PALETTE: COLOR_PALETTE,
     BACKGROUND_COLOR: BACKGROUND_COLOR,
     FADING: FADING
+  }
 }
-/*
-let userActions: Subject<UserAction>;
+//Local state of setting controllers for dat.gui
+const UIsettings = createInitialUISettings(); 
 
 const paletteUpdateObj = {
     RELOAD_PALETTE: function () {
         let scheme = getScheme();
-        settings.COLOR_PALETTE = scheme;
-        userActions.next(
+        UIsettings.COLOR_PALETTE = scheme;
+        settingsStore.dispatch(
             {
-                action: ActionType.VALUE_CHANGE,
-                payload: { name: COLOR_PALETTE, value: scheme }
+                type: SettingsActionType.VALUE_CHANGE,
+                payload: { change: {COLOR_PALETTE: scheme} }
             })
         }
 };
 
-const addListener = (guiC: dat.GUIController) => {
-    return guiC.onFinishChange((value: any) => {console.log(value); userActions.next(
+const addListener = (guiC: dat.GUIController, key: string) => {
+    return guiC.onFinishChange((value: any) => {
+        console.log(value); 
+        settingsStore.dispatch(
         {
-            action: ActionType.VALUE_CHANGE,
-            payload: { name: guiC.name, value: value, settings: {...settings} }
-        })})
+            type: SettingsActionType.VALUE_CHANGE,
+            payload: { change: {[key]: value}}
+        })
+    })
 }
 
 const handles: [string, number, number, number?][] = [
@@ -76,26 +82,30 @@ const handles: [string, number, number, number?][] = [
     ["MAXIMUM_VELOCITY", 0.001, 300],
     ["MAXIMUM_ACC", 0.001, 10],
     ["MAX_STROKE", 1, 50],
-    ["BURST_SIZE", 1, 100],
+    ["BURST_SIZE", 1, 250],
     ["TOTAL_BURSTS", 1, 2000,1],
     ["MIN_AGENTS", 1, 300, 1],
     ["FADING", 0.001, 100],
     ["NUM_OF_MAGNETS", 1, 20, 1]
 ]
 
-export const configInputs = function (userActions: Subject<UserAction>) {
-    //TODO:FIX!!
-    userActions = userActions;
+const controllers: {[key:string]: dat.GUIController} = {};
 
+export const addConfigInputs = function () {
+    //TODO:FIX UGLINESS!! 
     let gui = new dat.GUI();
     for (let sets of handles) {
         const [key, min, max, step] = sets;
-        const guiC = gui.add(settings, key, min, max, step)
-        addListener(guiC);
+        const guiC = gui.add(UIsettings, key, min, max, step)
+        addListener(guiC, key);
+        controllers[key] = guiC;
     }
-    addListener(gui.add(settings, "RANDOM_START", true));
-   gui.add(paletteUpdateObj,'RELOAD_PALETTE');
+    const randomGui = gui.add(UIsettings, "RANDOM_START", true);
+    addListener(randomGui, "RANDOM_START");
+    controllers["RANDOM_START"] = randomGui;
 
+   const paletteGui =gui.add(paletteUpdateObj,'RELOAD_PALETTE');
+   controllers['RELOAD_PALETTE'] = paletteGui; 
 
     gui.close(); // start the sketch with the GUI closed 
-}*/ 
+}

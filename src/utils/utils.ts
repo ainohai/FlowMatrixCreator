@@ -1,8 +1,8 @@
 import { config } from '../config';
 import { mapToBoundaries } from './mathUtils';
-import { settings } from '../userInput/configInput';
 import { AgentType, Rgb } from '../entities/entityTypes';
-import { CanvasSettings } from '../stateHandling/reducers/drawingStateReducer';
+import { CanvasSettings } from '../settingTypes';
+import { settings } from '../stateHandling/storeCreators/settingsStore';
 
 
 ///Test function for selecting color
@@ -64,11 +64,11 @@ export const colorByVelocity = (
   const acc = agent.acceleration.strength;
 
   const index =
-    Math.floor(mapToBoundaries(acc, 0, settings.MAXIMUM_ACC, 0, settings.COLOR_PALETTE.length - 1)) %
-    settings.COLOR_PALETTE.length;
+    Math.floor(mapToBoundaries(acc, 0, settings().MAXIMUM_ACC, 0, settings().COLOR_PALETTE.length - 1)) %
+    settings().COLOR_PALETTE.length;
 
   const opacity = 95;
-  const color = settings.COLOR_PALETTE[index]
+  const color = settings().COLOR_PALETTE[index]
   color.opacity = opacity;
 
   if (acc !== 0) {

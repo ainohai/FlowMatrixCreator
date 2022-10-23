@@ -1,63 +1,47 @@
 import { MagnetPoint } from "../../entities/MagnetPoint";
-import { changeStateIndex, initialState, setupNextRender } from "./drawingStateUtil";
-import { config, StateOfArt } from "../../config";
+import { changeStateIndex, initialState, resetMagnets, setupNextRender } from "./drawingStateUtil";
+import { config } from "../../config";
 import { AgentType, GridType, Rgb } from "../../entities/entityTypes";
+import { CanvasSettings, StateOfArt } from "../../settingTypes";
+import { State, Reducer, Action } from "../store";
 
-//Get these by observable
+//TODO:Get these by observable
 const { CANVAS_WIDTH: windowWidth, CANVAS_HEIGHT: windowHeight, BACKGROUND_COLOR : backgroundColor } = config;
 
-/*const stateSubject = new BehaviorSubject(initState);
-const stateObs = () => stateSubject;
-
-updateStateTrigger.subscribe((payload) => 
-    { 
-      let state = stateSubject.getValue();
-      stateSubject.next(updateState(state, payload))
-  });
-*/
-
-export type DrawingReducer = (
-    previousState: DrawingState,
-    action: DrawingAction
-  ) => DrawingState;
+export interface DrawingState extends State {
+  grid: GridType;
+  agents: AgentType[];
+  canvas: CanvasSettings;
+  stateIndex: number;
+  magnets: MagnetPoint[];
+  nextAgentBurst: number;
+};
 
 //TODO: could be prettier  
 export type Payload = {phaseDone? : boolean, jumpToStage?: StateOfArt};
 
 export enum DrawingActionType {
     SETUP_DRAW,
-    JUMP_TO_INDEX
+    JUMP_TO_INDEX,
+    RESET_MAGNETS
 }
 
-export type DrawingAction = {
+export interface DrawingAction  extends Action<DrawingState> {
     type: DrawingActionType;
     payload?: Payload;
  }
 
-export type DrawingState = {
-    grid: GridType;
-    agents: AgentType[];
-    canvas: CanvasSettings;
-    stateIndex: number;
-    magnets: MagnetPoint[];
-    nextAgentBurst: number;
-  };
-  
-export type CanvasSettings = {
-    height?: number;
-    width?: number;
-    color?: Rgb;
-};
 
-const initState: DrawingState = initialState({
+
+const initState: () => DrawingState = () => initialState({
     //todo: solve why p5 gives faulty values for width & height
     width: windowWidth,
     height: windowHeight,
     color: backgroundColor,
   }); 
 
-  const drawingStateReducer = (
-    prevState: DrawingState = initState,
+  const drawingStateReducer: Reducer<DrawingState> = (
+    prevState: DrawingState = initState(),
     action: DrawingAction
   ): DrawingState => {
   
@@ -65,10 +49,13 @@ const initState: DrawingState = initialState({
       case DrawingActionType.SETUP_DRAW:
         return setupNextRender(prevState, action);
       case DrawingActionType.JUMP_TO_INDEX:
-        return changeStateIndex(prevState, action);    
+        return changeStateIndex(prevState, action);
+      case DrawingActionType.RESET_MAGNETS:
+        return resetMagnets(prevState);
       default:   
         return prevState;
     }
   };
   
   export default drawingStateReducer;
+
