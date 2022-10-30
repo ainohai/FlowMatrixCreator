@@ -10,60 +10,63 @@ import {
   getSinks,
   MagnetPoint,
 } from '../../entities/MagnetPoint';
-import { DrawingAction, DrawingState } from './drawingStateReducer';
+import { DrawingAction, DrawingReducer, DrawingState } from './drawingStateReducer';
 import { AgentType } from '../../entities/entityTypes';
-import { settings } from '../storeCreators/settingsStore';
-import { CanvasSettings, StateOfArt } from '../../settingTypes';
+import { CanvasSettings, SettingsState, StateOfArt } from '../../settingTypes';
 import { calculateForces } from '../../utils/gridUtil';
 import { Reducer } from '../store';
+
 
 const getCurrentAgents = (
   agents: AgentType[],
   canvas: CanvasSettings,
   magnets: MagnetPoint[],
-  agentBurst: number
+  agentBurst: number,
+  settings: SettingsState
 ) => {
   const living = agents.filter((agent) => agent.isAlive);
-  if (living.length < settings().MIN_AGENTS && agentBurst < settings().TOTAL_BURSTS) {
+  if (living.length < settings.MIN_AGENTS && agentBurst < settings.TOTAL_BURSTS) {
     agentBurst++;
 
     const startingPoints = getCreators(magnets);
-    living.push(...createDummyAgents(startingPoints, canvas));
+    living.push(...createDummyAgents(startingPoints, canvas, settings));
   }
   return {agents: living, currentBurst: agentBurst};
 };
 
-const updateAgents = function (state: DrawingState): {agents: AgentType[], currentBurst: number} {
+const updateAgents = function (state: DrawingState, settings: SettingsState): {agents: AgentType[], currentBurst: number} {
   const { agents, grid, canvas, magnets, nextAgentBurst } = state;
+  const { ADD_TO_OLD_VELOCITY, MAXIMUM_ACC, FRICTION_MULTIPLIER, MAXIMUM_VELOCITY } = settings;
+
   for (let agent of agents) {
-    moveAgent(agent, grid);
+    moveAgent(agent, grid, ADD_TO_OLD_VELOCITY, MAXIMUM_ACC, FRICTION_MULTIPLIER, MAXIMUM_VELOCITY);
     checkIfAgentAlive(agent, canvas, getSinks(magnets), grid.gridSize);
   }
-  return getCurrentAgents(agents, canvas, magnets, nextAgentBurst);
+  return getCurrentAgents(agents, canvas, magnets, nextAgentBurst, settings);
 }
 
-export const reset = function (state: DrawingState): DrawingState {
-  return initialState(state.canvas);
+export const reset = function (state: DrawingState, settings: SettingsState): DrawingState {
+  return initialState(state.canvas, settings);
 }
 //TODO: Change how grid is calculated. 
-export const resetMagnets = function (state: DrawingState): DrawingState {
-  const grid = gridFactory(state.canvas.width, state.canvas.height);
-  const magnets = createMagnets(state.canvas.width, state.canvas.height);
-  fillGridUsingFunction(grid, magnets, calculateForces);
+export const resetMagnets = function (state: DrawingState, settings: SettingsState): DrawingState {
+  const grid = gridFactory(state.canvas.width, state.canvas.height, settings.GRID_SIZE);
+  const magnets = createMagnets(state.canvas.width, state.canvas.height, settings.NUM_OF_MAGNETS, settings.MAGNET_STRENGTH_MAX);
+  fillGridUsingFunction(grid, magnets, settings.FORCE_MULTIPLIER, calculateForces);
   return {...state, ...{magnets: magnets, grid: grid}}
 }
 
-export const initialState = function (canvasSettings: CanvasSettings): DrawingState {
+export const initialState = function (canvasSettings: CanvasSettings, settings: SettingsState): DrawingState {
   const { width, height } = canvasSettings;
+  const { BURST_SIZE, RANDOM_START, DEFAULT_LIFESPAN, MAX_STROKE, OFFSET } = settings;
+  const grid = gridFactory(width, height, settings.GRID_SIZE);
+  const magnets = createMagnets(width, height, settings.NUM_OF_MAGNETS, settings.MAGNET_STRENGTH_MAX);
 
-  const grid = gridFactory(width, height);
-  const magnets = createMagnets(width, height);
-
-  fillGridUsingFunction(grid, magnets, calculateForces);
+  fillGridUsingFunction(grid, magnets, settings.FORCE_MULTIPLIER, calculateForces);
 
   let startingPoints = getCreators(magnets);
 
-  let agents = createDummyAgents(startingPoints, canvasSettings);
+  let agents = createDummyAgents(startingPoints, canvasSettings, settings);
 
   return {
     grid: grid,
@@ -75,12 +78,12 @@ export const initialState = function (canvasSettings: CanvasSettings): DrawingSt
   };
 }
 
-export const setupNextRender: Reducer<DrawingState> = (state: DrawingState, action: DrawingAction): DrawingState => {
+export const setupNextRender = (state: DrawingState, action: DrawingAction, settings: SettingsState): DrawingState => {
   const { stateIndex } = state;
   const { payload } = action; 
   let next = false;
   let definedState: number | undefined;
-  const { USED_STATES } = settings();
+  const { USED_STATES } = settings;
 
   if (USED_STATES[stateIndex] === StateOfArt.SETUP ||
     USED_STATES[stateIndex] === StateOfArt.DRAW_HELPER_GRID ||
@@ -92,7 +95,7 @@ export const setupNextRender: Reducer<DrawingState> = (state: DrawingState, acti
     definedState = undefined;
   }
   else if (USED_STATES[stateIndex] === StateOfArt.DRAW_AGENTS) {
-    let update = updateAgents(state);
+    let update = updateAgents(state, settings);
     state.agents = update.agents;
     state.nextAgentBurst = update.currentBurst;
     if (state.agents.length === 0) {
@@ -100,7 +103,7 @@ export const setupNextRender: Reducer<DrawingState> = (state: DrawingState, acti
     }
   }
   else if (USED_STATES[stateIndex] === StateOfArt.RESET) {
-    state = reset(state);
+    state = reset(state, settings);
     definedState = USED_STATES.indexOf(StateOfArt.SETUP) + 1;
   }
   else if (USED_STATES[stateIndex] === StateOfArt.CLEAR_SCREEN) {
@@ -117,11 +120,11 @@ export const setupNextRender: Reducer<DrawingState> = (state: DrawingState, acti
   };
 }
 
-export const changeStateIndex: Reducer<DrawingState> = (state: DrawingState, action: DrawingAction): DrawingState => {
+export const changeStateIndex = (state: DrawingState, action: DrawingAction, settings: SettingsState): DrawingState => {
 
   let definedState = 0;
   const jumpToStage = action.payload.jumpToStage;
-  const { USED_STATES } = settings();
+  const { USED_STATES } = settings;
 
   if (jumpToStage) {
       definedState = USED_STATES.indexOf(action.payload.jumpToStage);
@@ -135,5 +138,5 @@ export const changeStateIndex: Reducer<DrawingState> = (state: DrawingState, act
   return {
     ...state, 
     ...{ stateIndex: definedState }
-  };
+  }
 }

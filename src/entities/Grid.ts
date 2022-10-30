@@ -1,4 +1,3 @@
-import { settings } from '../stateHandling/storeCreators/settingsStore';
 import { createVector } from './ArtVector';
 import { GridType, GridValue } from './entityTypes';
 import { MagnetPoint } from './MagnetPoint';
@@ -17,11 +16,11 @@ const numberOfRows = (height: number, gridSize: number) =>
 export const gridFactory = (
   width: number,
   height: number,
-  gridSize?: number
+  gridSize: number
 ): GridType => {
   //Creating empty grid. Note that for... in loops only set indexes, for... of loops all.
   const gridValues = [];
-  gridSize = gridSize ?? settings().GRID_SIZE;
+  gridSize = gridSize;
   const numOfCols = numberOfCols(width, gridSize);
   const numOfRows = numberOfRows(height, gridSize);
 
@@ -39,11 +38,13 @@ export const gridFactory = (
 export const fillGridUsingFunction = (
   grid: GridType,
   magnetPoints: MagnetPoint[],
+  forceMultiplier: number,
   countAngleCallBack: (
     row: number,
     column: number,
     grid: GridType,
-    magnets?: MagnetPoint[]
+    magnets: MagnetPoint[],
+    forceMultiplier: number
   ) => { direction: number; velocity: number }
 ) => {
   let gridValues = grid.gridValues;
@@ -54,7 +55,8 @@ export const fillGridUsingFunction = (
         row,
         column,
         grid,
-        magnetPoints
+        magnetPoints,
+        forceMultiplier
       );
 
       const xStep = velocity * Math.cos(direction);

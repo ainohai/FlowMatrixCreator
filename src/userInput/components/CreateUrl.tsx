@@ -1,92 +1,101 @@
-import { Component, h } from 'htm/preact';
-import { SettingsState, StateOfArt } from '../../settingTypes';
-import { DrawingActionType, DrawingState } from '../../stateHandling/reducers/drawingStateReducer';
-import { UserActionState, UserActionType } from '../../stateHandling/reducers/userActionReducer';
-import { Dispatch } from '../../stateHandling/store';
-import settingsStore from '../../stateHandling/storeCreators/settingsStore';
-import { unidecode, uniencode } from '../../utils/parseUrl';
-import { Button } from './Button';
+import { h } from 'htm/preact';
+import { uniencode } from '../../utils/parseUrl';
+import { useCreateUrl } from '../hooks/useCreateUrl';
 
 
 type CreateUrlProps = {
-
 };
 
-type CreateUrlState = {
-    urlCreated: string;
-    showButtons: boolean;
-    showConfigs: boolean;
-};
+export function CreateUrl({ }: CreateUrlProps) {
 
-export class CreateUrl extends Component<CreateUrlProps, CreateUrlState> {
-    constructor(props: CreateUrlProps) {
-        super(props);
+    const [state, setState] = useCreateUrl();
 
+    const combinedSettings = () => {
+        return {
+            ...state.settings,
+            ...{
+                SHOW_BUTTONS: state.showButtons,
+                SHOW_CONTROLS: state.showConfigs
+            }
+        }
     }
-    componentDidMount(): void {
-        this.setState({
-            urlCreated: "",
-            showButtons: false,
-            showConfigs: false
-        });
-    }
-    createHashUrl() {
-        const state: SettingsState = { ...settingsStore.last(), ...{ SHOW_BUTTONS: this.state.showButtons, SHOW_CONTROLS: this.state.showConfigs } }
-        const encodedState = uniencode(state)
+
+    const createHashUrl = () => {
+        //const state: SettingsState = { ...settingsStore.last(), ...{ SHOW_BUTTONS: this.state.showButtons, SHOW_CONTROLS: this.state.showConfigs } }
+        const encodedState = uniencode(combinedSettings())
         let url = location.host;
-        this.setState({
-            urlCreated: `${url}?settings=${encodedState}`
+
+        setState({
+            ...state, ...{
+                urlCreated: `${url}?settings=${encodedState}`
+            }
         })
         setTimeout(() => {
-            this.setState({
-                urlCreated: ""
+            setState({
+                ...state,
+                ...{ urlCreated: "" }
             })
-        }, 60 * 1000)
+        }, 30 * 1000)
     }
-    toggleShowButtons(e) {
-        this.setState({
-            showButtons: e.target
+    const toggleShowButtons = (e) => {
+        setState({
+            ...state, ...{
+                showButtons: e.target.checked
+            }
         })
     }
-    toggleShowConfigs(e) {
-        this.setState({
-            showConfigs: e.target
+    const toggleShowConfigs = (e) => {
+        setState({
+            ...state, ...{ showConfigs: e.target.checked }
         })
 
     }
 
-
-    render() {
-        return (
-            <div style={{ display:"block"}}>
-                {this.state.urlCreated &&
-                    <input key="urlHash"
-                        style={{ color: "white", width: 200 }}
-                        value={this.state.urlCreated} />}
-                <div style={{ display:"block"}}>
-                    <input
-                        key="showButtons"
-                        onClick={(e) => this.toggleShowButtons(e)}
-                        type="checkbox"
-                    />Show buttons in url
-                </div>
-                <div style={{ display:"block"}}>    
-                    <input
-                        key="showConfigs"
-                        onClick={(e) => this.toggleShowConfigs(e)}
-                        type="checkbox" />
-                    Show configs in url
+    return (
+        <div style={{ display: "block" }}>
+            {state.urlCreated &&
+                <div>
+                    <div>
+                        <input key="urlHash"
+                            style={{ color: "white", width: 200 }}
+                            value={state.urlCreated} />
                     </div>
-                    <div style={{ display:"block"}}>
-                    <button
-                        className={"button-small"}
-                        onClick={() => this.createHashUrl()}>
-                        Create url
-                    </button>
-
-                </div>
+                    <div>
+                        <a target="_blank" href={state.urlCreated}>Link</a>
+                        <button
+                            className={"button-small button button-clear"}
+                            onClick={() => alert(JSON.stringify(combinedSettings()))}>
+                            JSON
+                        </button>
+                    </div>
+                </div>}
+            <div style={{ display: "block" }}>
+                <input
+                    key="showButtons"
+                    onClick={(e) => toggleShowButtons(e)}
+                    type="checkbox"
+                    checked={state.showButtons}
+                />Show buttons in url
+            </div>
+            <div style={{ display: "block" }}>
+                <input
+                    key="showConfigs"
+                    onClick={(e) => toggleShowConfigs(e)}
+                    type="checkbox"
+                    checked={state.showConfigs}
+                />
+                Show configs in url
+            </div>
+            <div style={{ display: "block" }}>
+                <button
+                    className={"button-small"}
+                    onClick={() => createHashUrl()}>
+                    Create url
+                </button>
 
             </div>
-        )
-    }
+
+        </div>
+    )
+
 }

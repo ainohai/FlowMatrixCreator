@@ -1,10 +1,11 @@
 import * as p5 from 'p5';
 import { renderer } from './renderer';
 import { DrawingActionType, DrawingState, Payload } from '../stateHandling/reducers/drawingStateReducer';
-import settingsStore, { settings } from '../stateHandling/storeCreators/settingsStore';
-import { combineLatest, filter, map, subscribeOn, take } from 'rxjs';
-import { StateOfArt } from '../settingTypes';
+import settingsStore, { getInitialSettings } from '../stateHandling/storeCreators/settingsStore';
+import { map, take } from 'rxjs';
+import { SettingsState, StateOfArt } from '../settingTypes';
 import drawingStore from '../stateHandling/storeCreators/drawingStore';
+import { subscribeToStateOfArtIndex } from '../stateHandling/subscriptions';
 
 
 /**TODO:
@@ -32,16 +33,22 @@ import drawingStore from '../stateHandling/storeCreators/drawingStore';
  * 11. Make it art.
  **/
 
-//TODO: this is clumsy. 
+//TODO: this is clumsy. These update by stream
 let loopingOn;
+let settings: SettingsState; 
+let drawing: DrawingState;
 
+let renderSettings: SettingsState;
 /**
  * @return true if can move to next state
  * @param state
  * @param p5
  */
 const sketch = function (p5: p5) {
-  const render = renderer(p5);
+
+  renderSettings = settings;
+  const getSettings = () => renderSettings;
+  const render = renderer(p5, getSettings);
 
   loopingOn = () => p5.loop();
 
@@ -49,7 +56,7 @@ const sketch = function (p5: p5) {
     const { grid, agents, stateIndex, canvas, magnets } = renderState;
     //todo: Some other solution?
     let payload = {};
-    switch (settings().USED_STATES[stateIndex]) {
+    switch (getSettings().USED_STATES[stateIndex]) {
       case StateOfArt.DRAW_GRID:
         let gridDone = render.grid(grid);
         payload = { phaseDone: gridDone };
@@ -64,7 +71,7 @@ const sketch = function (p5: p5) {
         render.clearScreen(canvas.color);
         break;
       case StateOfArt.DRAW_AGENTS:
-        render.agents(agents, canvas);
+        render.agents(agents, canvas, getSettings().FADING);
         break;
       case StateOfArt.END:
         console.log('done'); //DEBUG
@@ -78,34 +85,34 @@ const sketch = function (p5: p5) {
   }
 
   p5.setup = () => {
-
-    let state = drawingStore.last();
-
-    render.canvas(state.canvas);
-
-    drawingStore.dispatch({ type: DrawingActionType.SETUP_DRAW })
+    const drawingState = drawing;
+    renderSettings = settings;
+    render.canvas(drawingState.canvas);
+    drawingStore().dispatch({ type: DrawingActionType.SETUP_DRAW })
   };
 
   // Main render loop
   p5.draw = () => {
+    const drawingState = drawing; 
+    renderSettings = settings;
+    let payload = renderState(drawingState)
 
-    let state = drawingStore.last();
-    let payload = renderState(state)
-
-    drawingStore.dispatch({ type: DrawingActionType.SETUP_DRAW, payload: payload })
+    drawingStore().dispatch({ type: DrawingActionType.SETUP_DRAW, payload: payload })
   };
 };
 
 export const render = function () {
   let p5Instance: p5;
-  const init$ = drawingStore.state$.pipe(take(1))
+  const init$ = drawingStore().state$.pipe(take(1))
   init$.subscribe(newState => {
     p5Instance = new p5(sketch, document.getElementById('p5-container'));
   })
   
-  const stateIndex$ = drawingStore.state$.pipe(map((state) => state.stateIndex));
-  const usedStates$ = settingsStore.state$.pipe(map((state) => state.USED_STATES));
-  const restart$ = combineLatest([stateIndex$, usedStates$])
-  .pipe(filter(([index, usedStates]) => StateOfArt.RESET === usedStates[index]))
-  .subscribe(() => loopingOn());
+  //We want the store to keep the same settings during a rendering round. 
+  const drawingStore$ = drawingStore().state$.subscribe((state: DrawingState) => drawing = state);
+  const settingsState$ = settingsStore().state$.subscribe((state: SettingsState) => settings = state);
+
+  const stateIndex$ = drawingStore().state$.pipe(map((state: DrawingState) => state.stateIndex));
+  const usedStates$ = settingsStore().state$.pipe(map((state: SettingsState) => state.USED_STATES));
+  const restart$ = subscribeToStateOfArtIndex((index: number) => {if(StateOfArt.RESET === getInitialSettings().USED_STATES[index]) {loopingOn()}});
 }

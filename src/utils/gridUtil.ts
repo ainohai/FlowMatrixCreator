@@ -5,7 +5,7 @@ import {
 import { MagnetPoint } from '../entities/MagnetPoint';
 import { ArtVector, createVectorByAngle } from '../entities/ArtVector';
 import { GridType } from '../entities/entityTypes';
-import { settings } from '../stateHandling/storeCreators/settingsStore';
+import { SettingsState } from '../settingTypes';
 
 export type Location = {
   x: number;
@@ -47,7 +47,8 @@ export const calculateForces = (
   row: number,
   column: number,
   grid: GridType,
-  magnetPoints: MagnetPoint[]
+  magnetPoints: MagnetPoint[],
+  forceMultiplier: number
 ) => {
   if (!magnetPoints || magnetPoints.length === 0) {
     throw 'Please, do not try to calc forces if there are no sinks or creators';
@@ -81,7 +82,7 @@ export const calculateForces = (
       magnet.locationY
     );
 
-    const strength = (settings().FORCE_MULTIPLIER * magnet.strength) / distance;
+    const strength = (forceMultiplier * magnet.strength) / distance;
 
     const strengthVector: ArtVector = createVectorByAngle(angle, strength);
     effectOfMagnetPoint = !!effectOfMagnetPoint

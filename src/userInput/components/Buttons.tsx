@@ -3,12 +3,10 @@ import { StateOfArt } from '../../settingTypes';
 import { DrawingActionType, DrawingState } from '../../stateHandling/reducers/drawingStateReducer';
 import { UserActionState, UserActionType } from '../../stateHandling/reducers/userActionReducer';
 import { Dispatch } from '../../stateHandling/store';
+import { useStateOfArt } from '../hooks/useStateOfArt';
 import { Button } from './Button';
 
 type ButtonsProps = {
-  stateOfArt: StateOfArt;
-  dispatch: Dispatch<DrawingState>;
-  userActionDispatch: Dispatch<UserActionState>;
 };
 
 const start = (dispatch: Dispatch<DrawingState>) => {
@@ -31,15 +29,28 @@ const save = (userActionDispatch: Dispatch<UserActionState>) => {
     userActionDispatch({type: UserActionType.SAVE})
 }
 
+const waitingForConfirm = (state: StateOfArt) => {
+    return StateOfArt.CONFIRM_DRAW === state;
+}
+const notRendering = (stateOfArt: StateOfArt) => {
+    return stateOfArt !== StateOfArt.SETUP && stateOfArt !== StateOfArt.END && stateOfArt !== StateOfArt.CONFIRM_DRAW
+}
+const possiblyArtDone = (stateOfArt: StateOfArt) => {
+        return stateOfArt === StateOfArt.CONFIRM_DRAW || stateOfArt === StateOfArt.END
+}
 
-export function Buttons({ stateOfArt, dispatch, userActionDispatch }: ButtonsProps) {
+
+export function Buttons({ }: ButtonsProps) {
+
+    const [stateOfArt, drawingDispatch, userActionDispatch] = useStateOfArt();
+
     return(
         <div>
-            {stateOfArt === StateOfArt.CONFIRM_DRAW && <Button title={"Continue"} onClick={() => { start(dispatch) }}></Button>}
-            {(stateOfArt !== StateOfArt.SETUP && stateOfArt !== StateOfArt.END && stateOfArt !== StateOfArt.CONFIRM_DRAW) && <Button title={"Stop"} onClick={() => { stop(dispatch) }}></Button>}
-            {(stateOfArt === StateOfArt.CONFIRM_DRAW) && <Button title={"Clear screen"} onClick={() => { clear(dispatch) }}></Button>}
-            <Button title={"Restart"} onClick={() => { restart(dispatch) }}></Button>
-            {(stateOfArt === StateOfArt.CONFIRM_DRAW || stateOfArt === StateOfArt.END) && <Button title={"Take a picture"} onClick={() => { save(userActionDispatch) }}></Button>}
+            {waitingForConfirm(stateOfArt) && <Button title={"Continue"} onClick={() => { start(drawingDispatch) }}></Button>}
+            {notRendering(stateOfArt) && <Button title={"Stop"} onClick={() => { stop(drawingDispatch) }}></Button>}
+            {waitingForConfirm(stateOfArt) && <Button title={"Clear screen"} onClick={() => { clear(drawingDispatch) }}></Button>}
+            <Button title={"Restart"} onClick={() => { restart(drawingDispatch) }}></Button>
+            {possiblyArtDone(stateOfArt) && <Button title={"Take a picture"} onClick={() => { save(userActionDispatch) }}></Button>}
         </div>
     )
 }

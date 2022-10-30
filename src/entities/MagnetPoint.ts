@@ -1,4 +1,3 @@
-import { settings } from '../stateHandling/storeCreators/settingsStore';
 import { getRandomInt, getRandomPosOrNegInt } from '../utils/mathUtils';
 
 export type MagnetPoint = {
@@ -7,22 +6,23 @@ export type MagnetPoint = {
   strength?: number; // Positive if this works as creator, negative for sinks.
 };
 
-export const dummyMagnet = (xMax: number, yMax: number) => {
+export const dummyMagnet = (xMax: number, yMax: number, magnetStrengthMax: number) => {
   return {
     locationX: getRandomInt(xMax),
     locationY: getRandomInt(yMax),
-    strength: getRandomPosOrNegInt(settings().MAGNET_STRENGTH_MAX),
+    strength: getRandomPosOrNegInt(magnetStrengthMax),
   };
 };
 
 export const createMagnets = (
   width: number,
   height: number,
-  numOfMagnets = settings().NUM_OF_MAGNETS
+  numOfMagnets: number,
+  magnetStrengthMax: number, 
 ): MagnetPoint[] => {
   const magnets = [];
   for (let i = 0; i < numOfMagnets; i++) {
-    magnets.push(dummyMagnet(width, height));
+    magnets.push(dummyMagnet(width, height, magnetStrengthMax));
   }
   return magnets;
 };

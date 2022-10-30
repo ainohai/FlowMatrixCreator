@@ -3,7 +3,6 @@ import { getLocationOfCell } from '../utils/gridUtil';
 import { MagnetPoint } from '../entities/MagnetPoint';
 import { AgentType, GridType, Rgb } from '../entities/entityTypes';
 import { CanvasSettings } from '../settingTypes';
-import { settings } from '../stateHandling/storeCreators/settingsStore';
 
 export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
   return opacity
@@ -14,11 +13,11 @@ export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
 /**
  * Draws horizontal and vertical lines.
  */
-export const drawHelpGrid = (p5: p5, canvas: CanvasSettings) => {
-  for (let i = 0; i < canvas.width; i += settings().HELPER_GRID_SIZE) {
+export const drawHelpGrid = (p5: p5, canvas: CanvasSettings, helperGridSize: number) => {
+  for (let i = 0; i < canvas.width; i += helperGridSize) {
     p5.line(i, 0, i, canvas.height);
   }
-  for (let i = 0; i < canvas.height; i += settings().HELPER_GRID_SIZE) {
+  for (let i = 0; i < canvas.height; i += helperGridSize) {
     p5.line(0, i, canvas.width, i);
   }
 };
@@ -85,16 +84,16 @@ export function* drawHelperMatrix(grid: GridType, p5: p5) {
  * @param p5
  * @param magnets
  */
-export function drawMagnetPoints(p5: p5, magnets: MagnetPoint[]) {
+export function drawMagnetPoints(p5: p5, magnets: MagnetPoint[], colorPalette: Rgb[], magnetStrengthMax) {
   for (let magnet of magnets) {
     p5.fill(
       magnet.strength < 0
-        ? rgbToP5Color(p5, settings().COLOR_PALETTE[0])
-        : rgbToP5Color(p5, settings().COLOR_PALETTE[settings().COLOR_PALETTE.length - 1])
+        ? rgbToP5Color(p5, colorPalette[0])
+        : rgbToP5Color(p5, colorPalette[colorPalette.length - 1])
     );
     p5.text(
       `x: ${magnet.locationX}, y: ${magnet.locationY}, mag: ${magnet.strength}`,
-      magnet.locationX + settings().MAGNET_STRENGTH_MAX,
+      magnet.locationX + magnetStrengthMax,
       magnet.locationY
     );
     p5.circle(magnet.locationX, magnet.locationY, Math.abs(magnet.strength));

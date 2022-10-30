@@ -1,24 +1,17 @@
-import { config } from "../../config";
 import { SettingsState } from "../../settingTypes";
 import { getInitialConfigObj } from "../../utils/parseUrl";
-import { Action, Reducer, State } from "../store";
-
-
+import { Action, Reducer } from "../store";
 
 export enum SettingsActionType {
   INIT,
-  VALUE_CHANGE
+  VALUE_CHANGE,
+  SUCCESS
 }
 
 export interface SettingsAction extends Action<SettingsState> {
   type: SettingsActionType;
   payload?: { change?: { [key: string]: any } };
 }
-
-
-//All the settings need to be in config file, so that in future we can have multiple config files.!
-let initialState: SettingsState = { ...getInitialConfigObj() };
-
 
 export const changeSettingValue = (
   previousState: SettingsState,
@@ -29,19 +22,21 @@ export const changeSettingValue = (
   ...action.payload.change
 });
 
+const createSettingsReducer = (initialSettings: SettingsState): Reducer<SettingsState> => {
 
-const settingsReducer: Reducer<SettingsState> = (
-  prevState: SettingsState = initialState,
-  action: SettingsAction,
-): SettingsState => {
+  const settingsReducer: Reducer<SettingsState> = (
+    prevState: SettingsState = initialSettings,
+    action: SettingsAction,
+  ): SettingsState => {
 
-  switch (action.type) {
-    case SettingsActionType.VALUE_CHANGE:
-      return changeSettingValue(prevState, action);
-    default:
-      return prevState;
-  }
-};
+    switch (action.type) {
+      case SettingsActionType.VALUE_CHANGE:
+        return changeSettingValue(prevState, action);
+      default:
+        return { ...prevState };
+    }
+  };
+  return settingsReducer;
+}
 
-
-export default settingsReducer;
+export default createSettingsReducer;

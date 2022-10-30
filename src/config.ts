@@ -27,21 +27,21 @@ export const config: SettingsState = {
   SHOW_BUTTONS: true,
 
   TOTAL_BURSTS: 100,
-  BURST_SIZE: 500,
-  OFFSET: 50,
+  BURST_SIZE: 200,
+  OFFSET: 5,
   MIN_AGENTS: 200,
   RANDOM_START: true,
 
   GRID_SIZE: 10, //px
   HELPER_GRID_SIZE: 100, //px
 
-  NUM_OF_MAGNETS: 2,
+  NUM_OF_MAGNETS: 4,
   MAGNET_STRENGTH_MAX: 30,
   //Multiplier constant. Similar to G in gravity calculations.
   FORCE_MULTIPLIER: 10,
 
   MAX_STROKE: 5,
-  DEFAULT_LIFESPAN: 3,
+  DEFAULT_LIFESPAN: 5,
   MAXIMUM_VELOCITY: 5,
   MAXIMUM_ACC: 1,
   ADD_TO_OLD_VELOCITY: true,

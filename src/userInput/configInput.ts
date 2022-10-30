@@ -4,61 +4,44 @@ import { config } from "../config";
 import drawingStore from "../stateHandling/storeCreators/drawingStore";
 import { DrawingActionType } from "../stateHandling/reducers/drawingStateReducer";
 import { SettingsActionType } from "../stateHandling/reducers/settingsReducer";
-import settingsStore, { settings } from "../stateHandling/storeCreators/settingsStore";
+import settingsStore from "../stateHandling/storeCreators/settingsStore";
 import { getScheme } from "../utils/colorUtil";
+import { SettingsState } from "../settingTypes";
 
 
-const createInitialUISettings = () => {
-const { TOTAL_BURSTS,
-    BURST_SIZE,
-    MIN_AGENTS,
-    RANDOM_START, 
-    NUM_OF_MAGNETS,
-    MAGNET_STRENGTH_MAX,
-    //Multiplier constant. Similar to G in gravity calculations..
-    FORCE_MULTIPLIER,
-
-    MAX_STROKE,
-    DEFAULT_LIFESPAN,
-    MAXIMUM_VELOCITY,
-    MAXIMUM_ACC,
-    ADD_TO_OLD_VELOCITY,
-    FRICTION_MULTIPLIER,
-
-    COLOR_PALETTE,
-    BACKGROUND_COLOR,
-    FADING } = settings();
+const createInitialUISettings = (settings: SettingsState) => {
 
 return {
-    TOTAL_BURSTS: TOTAL_BURSTS,
-    RANDOM_START: RANDOM_START,
-    BURST_SIZE: BURST_SIZE,
-    MIN_AGENTS: MIN_AGENTS,
-    NUM_OF_MAGNETS: NUM_OF_MAGNETS,
-    MAGNET_STRENGTH_MAX: MAGNET_STRENGTH_MAX,
+    TOTAL_BURSTS: settings.TOTAL_BURSTS,
+    RANDOM_START: settings.RANDOM_START,
+    BURST_SIZE: settings.BURST_SIZE,
+    MIN_AGENTS: settings.MIN_AGENTS,
+    NUM_OF_MAGNETS: settings.NUM_OF_MAGNETS,
+    MAGNET_STRENGTH_MAX: settings.MAGNET_STRENGTH_MAX,
     //Multiplier constant. Similar to G in gravity calculations.
-    FORCE_MULTIPLIER: FORCE_MULTIPLIER,
+    FORCE_MULTIPLIER: settings.FORCE_MULTIPLIER,
 
-    MAX_STROKE: MAX_STROKE,
-    DEFAULT_LIFESPAN: DEFAULT_LIFESPAN,
-    MAXIMUM_VELOCITY: MAXIMUM_VELOCITY,
-    MAXIMUM_ACC: MAXIMUM_ACC,
-    ADD_TO_OLD_VELOCITY: ADD_TO_OLD_VELOCITY,
-    FRICTION_MULTIPLIER: FRICTION_MULTIPLIER,
+    MAX_STROKE: settings.MAX_STROKE,
+    DEFAULT_LIFESPAN: settings.DEFAULT_LIFESPAN,
+    MAXIMUM_VELOCITY: settings.MAXIMUM_VELOCITY,
+    MAXIMUM_ACC: settings.MAXIMUM_ACC,
+    ADD_TO_OLD_VELOCITY: settings.ADD_TO_OLD_VELOCITY,
+    FRICTION_MULTIPLIER: settings.FRICTION_MULTIPLIER,
 
-    COLOR_PALETTE: COLOR_PALETTE,
-    BACKGROUND_COLOR: BACKGROUND_COLOR,
-    FADING: FADING
+    COLOR_PALETTE: [...settings.COLOR_PALETTE],
+    BACKGROUND_COLOR: settings.BACKGROUND_COLOR,
+    FADING: settings.FADING
   }
 }
+
 //Local state of setting controllers for dat.gui
-const UIsettings = createInitialUISettings(); 
+let UIsettings;
 
 const paletteUpdateObj = {
     RELOAD_PALETTE: function () {
         let scheme = getScheme();
         UIsettings.COLOR_PALETTE = scheme;
-        settingsStore.dispatch(
+        settingsStore().dispatch(
             {
                 type: SettingsActionType.VALUE_CHANGE,
                 payload: { change: {COLOR_PALETTE: scheme} }
@@ -69,7 +52,7 @@ const paletteUpdateObj = {
 const addListener = (guiC: dat.GUIController, key: string) => {
     return guiC.onFinishChange((value: any) => {
         console.log(value); 
-        settingsStore.dispatch(
+        settingsStore().dispatch(
         {
             type: SettingsActionType.VALUE_CHANGE,
             payload: { change: {[key]: value}}
@@ -82,7 +65,7 @@ const handles: [string, number, number, number?][] = [
     ["MAXIMUM_VELOCITY", 0.001, 300],
     ["MAXIMUM_ACC", 0.001, 10],
     ["MAX_STROKE", 1, 50],
-    ["BURST_SIZE", 1, 250],
+    ["BURST_SIZE", 1, 1000],
     ["TOTAL_BURSTS", 1, 2000,1],
     ["MIN_AGENTS", 1, 300, 1],
     ["FADING", 0.001, 100],
@@ -91,7 +74,10 @@ const handles: [string, number, number, number?][] = [
 
 const controllers: {[key:string]: dat.GUIController} = {};
 
-export const addConfigInputs = function () {
+export const addConfigInputs = function (initialSettings: SettingsState) {
+
+    UIsettings = createInitialUISettings(initialSettings); 
+
     //TODO:FIX UGLINESS!! 
     let gui = new dat.GUI();
     for (let sets of handles) {
