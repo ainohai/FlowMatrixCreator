@@ -1,4 +1,5 @@
 import { h } from 'htm/preact';
+import { Fragment } from 'preact';
 import { StateOfArt } from '../../settingTypes';
 import { DrawingActionType, DrawingState } from '../../stateHandling/reducers/drawingStateReducer';
 import { UserActionState, UserActionType } from '../../stateHandling/reducers/userActionReducer';
@@ -45,12 +46,12 @@ export function Buttons({ }: ButtonsProps) {
     const [stateOfArt, drawingDispatch, userActionDispatch] = useStateOfArt();
 
     return(
-        <div>
+        <>
             {waitingForConfirm(stateOfArt) && <Button title={"Continue"} onClick={() => { start(drawingDispatch) }}></Button>}
             {notRendering(stateOfArt) && <Button title={"Stop"} onClick={() => { stop(drawingDispatch) }}></Button>}
             {waitingForConfirm(stateOfArt) && <Button title={"Clear screen"} onClick={() => { clear(drawingDispatch) }}></Button>}
             <Button title={"Restart"} onClick={() => { restart(drawingDispatch) }}></Button>
             {possiblyArtDone(stateOfArt) && <Button title={"Take a picture"} onClick={() => { save(userActionDispatch) }}></Button>}
-        </div>
+        </>
     )
 }

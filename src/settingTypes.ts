@@ -14,6 +14,16 @@ export enum StateOfArt {
     END ="END",
   }
 
+  export enum AgentDrawingModeType {
+    RECTANGLE = "RECTANGLE",
+    CIRCLE = "CIRCLE"
+  }
+
+  export type NumberConfig = [string, number, number, number | undefined];
+  export type AgentDrawingMode = {
+  [mode in AgentDrawingModeType]: { percentage: number; };
+};
+
   export interface SettingsState extends State { 
     USED_STATES: StateOfArt[],
   
@@ -32,21 +42,25 @@ export enum StateOfArt {
     NUM_OF_MAGNETS: number,
     MAGNET_STRENGTH_MAX: number,
     //Multiplier constant. Similar to G in gravity calculations.
-    FORCE_MULTIPLIER: number,
+    MAGNET_FORCE_MULTIPLIER: number,
   
     MAX_STROKE: number,
     DEFAULT_LIFESPAN: number,
     MAXIMUM_VELOCITY: number,
     MAXIMUM_ACC: number,
     ADD_TO_OLD_VELOCITY: boolean,
-    FRICTION_MULTIPLIER: number,
+    VELOCITY_MULTIPLIER: number,
   
     COLOR_PALETTE: Rgb[],
     BACKGROUND_COLOR: Rgb,
     FADING: number,
 
     SHOW_CONTROLS: boolean,
-    SHOW_BUTTONS: boolean
+    SHOW_BUTTONS: boolean,
+
+    UI_CONFIGS: NumberConfig[]
+
+    AGENT_DRAWING_MODES: AgentDrawingMode
   }
 
 export type CanvasSettings = {

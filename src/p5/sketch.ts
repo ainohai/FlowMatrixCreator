@@ -33,7 +33,6 @@ import { subscribeToStateOfArtIndex } from '../stateHandling/subscriptions';
  * 11. Make it art.
  **/
 
-//TODO: this is clumsy. These update by stream
 let loopingOn;
 let settings: SettingsState; 
 let drawing: DrawingState;
@@ -71,7 +70,7 @@ const sketch = function (p5: p5) {
         render.clearScreen(canvas.color);
         break;
       case StateOfArt.DRAW_AGENTS:
-        render.agents(agents, canvas, getSettings().FADING);
+        render.agents(agents, canvas, getSettings().FADING, getSettings().AGENT_DRAWING_MODES);
         break;
       case StateOfArt.END:
         console.log('done'); //DEBUG
@@ -108,11 +107,11 @@ export const render = function () {
     p5Instance = new p5(sketch, document.getElementById('p5-container'));
   })
   
+  //TODO: Refactor
   //We want the store to keep the same settings during a rendering round. 
   const drawingStore$ = drawingStore().state$.subscribe((state: DrawingState) => drawing = state);
   const settingsState$ = settingsStore().state$.subscribe((state: SettingsState) => settings = state);
 
-  const stateIndex$ = drawingStore().state$.pipe(map((state: DrawingState) => state.stateIndex));
   const usedStates$ = settingsStore().state$.pipe(map((state: SettingsState) => state.USED_STATES));
   const restart$ = subscribeToStateOfArtIndex((index: number) => {if(StateOfArt.RESET === getInitialSettings().USED_STATES[index]) {loopingOn()}});
 }

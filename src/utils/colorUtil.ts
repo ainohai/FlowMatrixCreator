@@ -27,6 +27,7 @@ export const getScheme = (): Rgb[] => {
     r: rgba.red,
     b: rgba.blue,
     g: rgba.green,
+    opacity: 95
   }));
 };
 

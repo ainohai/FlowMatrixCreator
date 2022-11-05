@@ -15,7 +15,7 @@ export function CreateUrl({ }: CreateUrlProps) {
             ...state.settings,
             ...{
                 SHOW_BUTTONS: state.showButtons,
-                SHOW_CONTROLS: state.showConfigs
+                SHOW_CONTROLS: state.showConfigs,
             }
         }
     }
@@ -27,7 +27,7 @@ export function CreateUrl({ }: CreateUrlProps) {
 
         setState({
             ...state, ...{
-                urlCreated: `${url}?settings=${encodedState}`
+                urlCreated: `http://${url}?settings=${encodedState}`
             }
         })
         setTimeout(() => {
@@ -50,6 +50,12 @@ export function CreateUrl({ }: CreateUrlProps) {
         })
 
     }
+    const toggleShowAdvanced = (e) => {
+        setState({
+            ...state, ...{ showAdvanced: e.target.checked }
+        })
+    }
+    
 
     return (
         <div style={{ display: "block" }}>
@@ -57,7 +63,7 @@ export function CreateUrl({ }: CreateUrlProps) {
                 <div>
                     <div>
                         <input key="urlHash"
-                            style={{ color: "white", width: 200 }}
+                            style={{ width: 200 }}
                             value={state.urlCreated} />
                     </div>
                     <div>

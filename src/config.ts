@@ -1,4 +1,4 @@
-import { SettingsState, StateOfArt } from './settingTypes';
+import { AgentDrawingMode, AgentDrawingModeType, NumberConfig, SettingsState, StateOfArt } from './settingTypes';
 import { getScheme } from './utils/colorUtil';
 
 //default configurations
@@ -38,16 +38,30 @@ export const config: SettingsState = {
   NUM_OF_MAGNETS: 4,
   MAGNET_STRENGTH_MAX: 30,
   //Multiplier constant. Similar to G in gravity calculations.
-  FORCE_MULTIPLIER: 10,
+  MAGNET_FORCE_MULTIPLIER: 10.0,
 
   MAX_STROKE: 5,
   DEFAULT_LIFESPAN: 5,
-  MAXIMUM_VELOCITY: 5,
-  MAXIMUM_ACC: 1,
+  MAXIMUM_VELOCITY: 5.0,
+  MAXIMUM_ACC: 1.0,
   ADD_TO_OLD_VELOCITY: true,
-  FRICTION_MULTIPLIER: 0.5,
+  VELOCITY_MULTIPLIER: 0.5,
 
   COLOR_PALETTE: getScheme(),
   BACKGROUND_COLOR: { r: 35, g: 38, b: 38, opacity: 255 },
   FADING: 0.8,
+
+  AGENT_DRAWING_MODES: 
+     {[AgentDrawingModeType.CIRCLE]: {percentage: 1}} as AgentDrawingMode,
+
+  UI_CONFIGS: [
+    ["DEFAULT_LIFESPAN", 1, 150, 1],
+    ["MAXIMUM_VELOCITY", 0.001, 300, undefined],
+    ["MAXIMUM_ACC", 0.001, 10, undefined],
+    ["MAX_STROKE", 1, 50, undefined],
+    ["BURST_SIZE", 1, 1000, undefined],
+    ["TOTAL_BURSTS", 1, 2000,1],
+    ["MIN_AGENTS", 1, 300, 1],
+    ["FADING", 0.001, 100, undefined],
+    ["NUM_OF_MAGNETS", 1, 20, 1]] as NumberConfig[],
 } as const;

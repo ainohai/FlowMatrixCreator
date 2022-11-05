@@ -6,8 +6,6 @@ import { CanvasSettings, SettingsState, StateOfArt } from "../../settingTypes";
 import { State, Reducer, Action } from "../store";
 import { subscribeToSettings } from "../subscriptions";
 
-//TODO:Get these by observable
-const { CANVAS_WIDTH: windowWidth, CANVAS_HEIGHT: windowHeight, BACKGROUND_COLOR : backgroundColor } = config;
 
 export interface DrawingState extends State {
   grid: GridType;
@@ -44,9 +42,9 @@ export interface DrawingAction extends Action<DrawingState> {
 const init = (initialSettings: SettingsState) => {
   return initialState({
     //todo: solve why p5 gives faulty values for width & height
-    width: windowWidth,
-    height: windowHeight,
-    color: backgroundColor,
+    width: initialSettings.CANVAS_WIDTH,
+    height: initialSettings.CANVAS_HEIGHT,
+    color: initialSettings.BACKGROUND_COLOR,
   }, initialSettings); 
 }
 

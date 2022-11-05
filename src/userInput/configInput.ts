@@ -1,8 +1,4 @@
 import * as dat from "dat.gui";
-import { Subject } from "rxjs";
-import { config } from "../config";
-import drawingStore from "../stateHandling/storeCreators/drawingStore";
-import { DrawingActionType } from "../stateHandling/reducers/drawingStateReducer";
 import { SettingsActionType } from "../stateHandling/reducers/settingsReducer";
 import settingsStore from "../stateHandling/storeCreators/settingsStore";
 import { getScheme } from "../utils/colorUtil";
@@ -19,14 +15,14 @@ return {
     NUM_OF_MAGNETS: settings.NUM_OF_MAGNETS,
     MAGNET_STRENGTH_MAX: settings.MAGNET_STRENGTH_MAX,
     //Multiplier constant. Similar to G in gravity calculations.
-    FORCE_MULTIPLIER: settings.FORCE_MULTIPLIER,
+    MAGNET_FORCE_MULTIPLIER: settings.MAGNET_FORCE_MULTIPLIER,
 
     MAX_STROKE: settings.MAX_STROKE,
     DEFAULT_LIFESPAN: settings.DEFAULT_LIFESPAN,
     MAXIMUM_VELOCITY: settings.MAXIMUM_VELOCITY,
     MAXIMUM_ACC: settings.MAXIMUM_ACC,
     ADD_TO_OLD_VELOCITY: settings.ADD_TO_OLD_VELOCITY,
-    FRICTION_MULTIPLIER: settings.FRICTION_MULTIPLIER,
+    VELOCITY_MULTIPLIER: settings.VELOCITY_MULTIPLIER,
 
     COLOR_PALETTE: [...settings.COLOR_PALETTE],
     BACKGROUND_COLOR: settings.BACKGROUND_COLOR,
@@ -60,17 +56,6 @@ const addListener = (guiC: dat.GUIController, key: string) => {
     })
 }
 
-const handles: [string, number, number, number?][] = [
-    ["DEFAULT_LIFESPAN", 1, 150, 1],
-    ["MAXIMUM_VELOCITY", 0.001, 300],
-    ["MAXIMUM_ACC", 0.001, 10],
-    ["MAX_STROKE", 1, 50],
-    ["BURST_SIZE", 1, 1000],
-    ["TOTAL_BURSTS", 1, 2000,1],
-    ["MIN_AGENTS", 1, 300, 1],
-    ["FADING", 0.001, 100],
-    ["NUM_OF_MAGNETS", 1, 20, 1]
-]
 
 const controllers: {[key:string]: dat.GUIController} = {};
 
@@ -80,7 +65,7 @@ export const addConfigInputs = function (initialSettings: SettingsState) {
 
     //TODO:FIX UGLINESS!! 
     let gui = new dat.GUI();
-    for (let sets of handles) {
+    for (let sets of initialSettings.UI_CONFIGS) {
         const [key, min, max, step] = sets;
         const guiC = gui.add(UIsettings, key, min, max, step)
         addListener(guiC, key);

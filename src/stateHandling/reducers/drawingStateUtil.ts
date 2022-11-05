@@ -36,10 +36,10 @@ const getCurrentAgents = (
 
 const updateAgents = function (state: DrawingState, settings: SettingsState): {agents: AgentType[], currentBurst: number} {
   const { agents, grid, canvas, magnets, nextAgentBurst } = state;
-  const { ADD_TO_OLD_VELOCITY, MAXIMUM_ACC, FRICTION_MULTIPLIER, MAXIMUM_VELOCITY } = settings;
+  const { ADD_TO_OLD_VELOCITY, MAXIMUM_ACC, VELOCITY_MULTIPLIER, MAXIMUM_VELOCITY } = settings;
 
   for (let agent of agents) {
-    moveAgent(agent, grid, ADD_TO_OLD_VELOCITY, MAXIMUM_ACC, FRICTION_MULTIPLIER, MAXIMUM_VELOCITY);
+    moveAgent(agent, grid, ADD_TO_OLD_VELOCITY, MAXIMUM_ACC, VELOCITY_MULTIPLIER, MAXIMUM_VELOCITY);
     checkIfAgentAlive(agent, canvas, getSinks(magnets), grid.gridSize);
   }
   return getCurrentAgents(agents, canvas, magnets, nextAgentBurst, settings);
@@ -52,17 +52,16 @@ export const reset = function (state: DrawingState, settings: SettingsState): Dr
 export const resetMagnets = function (state: DrawingState, settings: SettingsState): DrawingState {
   const grid = gridFactory(state.canvas.width, state.canvas.height, settings.GRID_SIZE);
   const magnets = createMagnets(state.canvas.width, state.canvas.height, settings.NUM_OF_MAGNETS, settings.MAGNET_STRENGTH_MAX);
-  fillGridUsingFunction(grid, magnets, settings.FORCE_MULTIPLIER, calculateForces);
+  fillGridUsingFunction(grid, magnets, settings.MAGNET_FORCE_MULTIPLIER, calculateForces);
   return {...state, ...{magnets: magnets, grid: grid}}
 }
 
 export const initialState = function (canvasSettings: CanvasSettings, settings: SettingsState): DrawingState {
   const { width, height } = canvasSettings;
-  const { BURST_SIZE, RANDOM_START, DEFAULT_LIFESPAN, MAX_STROKE, OFFSET } = settings;
   const grid = gridFactory(width, height, settings.GRID_SIZE);
   const magnets = createMagnets(width, height, settings.NUM_OF_MAGNETS, settings.MAGNET_STRENGTH_MAX);
 
-  fillGridUsingFunction(grid, magnets, settings.FORCE_MULTIPLIER, calculateForces);
+  fillGridUsingFunction(grid, magnets, settings.MAGNET_FORCE_MULTIPLIER, calculateForces);
 
   let startingPoints = getCreators(magnets);
 

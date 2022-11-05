@@ -1,4 +1,5 @@
 import { Component, h } from 'htm/preact';
+import { Fragment } from 'preact';
 import drawingStore from '../../stateHandling/storeCreators/drawingStore';
 import { useMagnets } from '../hooks/useMagnets';
 
@@ -44,23 +45,21 @@ export function Magnets({ }: MagnetsProps) {
     }
 
     return (
-        <div>
+        <>
             {state.showButton &&
-                <div>
                     <button
                         className={"button-small"}
                         onClick={() => showMagnets(true)}>
                         Show magnets
                     </button>
-                </div >}
+                }
             {state.showMagnets &&
                 <div style={{ pointerEvents: "none", display: "block", position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}>
-                    <span>Showing!</span>
                     {state.magnets?.length && (state.magnets.map(magnet =>
                         <Magnet x={magnet.locationX} y={magnet.locationY} strength={Math.abs(magnet.strength)} color={magnet.strength > 0 ? "red" : "blue"} />
                     ))}
                 </div>
             }
-        </div>
+        </>
     )
 }

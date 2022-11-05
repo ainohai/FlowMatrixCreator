@@ -9,11 +9,6 @@ import { createSettingsStore, getInitialSettings } from './stateHandling/storeCr
 import { DrawingState } from './stateHandling/reducers/drawingStateReducer';
 
 
-//TODO: CLEAN UP THIS MESS. 
-//HOW? 
-//- Combined store?
-//- settings has always natural state and rendering is transactional. Behaviour subject might work better.  
-
 const settingsStore = createSettingsStore();
 const drawingStore = createDrawingsStore();
 

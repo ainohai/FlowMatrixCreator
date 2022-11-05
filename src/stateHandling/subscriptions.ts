@@ -2,20 +2,22 @@ import { combineLatest, map, Observable, Subscription } from "rxjs";
 import { Rgb } from "../entities/entityTypes";
 import { MagnetPoint } from "../entities/MagnetPoint";
 import { SettingsState, StateOfArt } from "../settingTypes";
+import { showAdvanced } from "../utils/parseUrl";
 import { DrawingState } from "./reducers/drawingStateReducer";
 import drawingStore from "./storeCreators/drawingStore";
 import settingsStore from "./storeCreators/settingsStore";
 
 export type ButtonConfs = {
     showButtons: boolean,
-    showControls: boolean
+    showControls: boolean,
+    showAdvanced: boolean
 }
 
 //Todo: Performance improvements. This is doing quite a lot of extra unneeded stuff. Check also preact rendering as it can be reduced. 
 const stateOfArtIndex$: () => Observable<number> = () => drawingStore().state$.pipe(map((state: DrawingState) => state.stateIndex));
 const usedStates$: () => Observable<StateOfArt[]> = () => settingsStore().state$.pipe(map((state: SettingsState) => state.USED_STATES));
 const palette$: () => Observable<Rgb[]> = () => settingsStore().state$.pipe(map((state: SettingsState) => state.COLOR_PALETTE));
-const showButtons$: () => Observable<ButtonConfs> = () => settingsStore().state$.pipe(map((state: SettingsState) => ({showControls: state.SHOW_CONTROLS, showButtons: state.SHOW_BUTTONS})));
+const showButtons$: () => Observable<ButtonConfs> = () => settingsStore().state$.pipe(map((state: SettingsState) => ({showControls: state.SHOW_CONTROLS, showButtons: state.SHOW_BUTTONS, showAdvanced:showAdvanced()})));
 
 export function onEmit<T>(source$:Observable<T>, nextFn:(value: T) => void): Subscription {
     return source$.subscribe((value) => {nextFn(value)});

@@ -15,6 +15,7 @@ import { Magnets } from "./components/Magnets";
 import { usePalette } from "./hooks/usePalette";
 import { useStateOfArt } from "./hooks/useStateOfArt";
 import { useButtonConfig } from "./hooks/useButtonConfig";
+import { AdvancedSettings } from "./components/AdvancedSettings";
 
 
 // Types for props
@@ -30,15 +31,17 @@ function ControlButtons ({}: ControlProps) {
 
     return (
       <div style={{ position: "relative" }}>
+        <div>
         <Palette palette={palette} />
         <Buttons  />
         {buttonConfig.showControls && 
-        <div>
           <Magnets/>
-          <CreateUrl/>
-          </div>
           }
+        </div>
         <FinishedInfo stateOfArt={stateOfArt}/>
+        {buttonConfig.showAdvanced && 
+        <AdvancedSettings/>
+        }
       </div>
     );
 }

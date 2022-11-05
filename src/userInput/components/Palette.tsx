@@ -6,7 +6,7 @@ type PaletteProps = {
 };
 export function Palette({ palette }: PaletteProps) {
   return (
-    <div style={{display: "block"}}>
+    <div style={{display: "inline-block", margin:10}}>
       {palette.length && (palette.map(paletteColor =>
         <div style={{ display:"inline-block", width: 10, height: 10, borderRadius: "50%", backgroundColor: `rgb(${paletteColor.r}, ${paletteColor.g}, ${paletteColor.b})` }} />
       ))}

@@ -5,12 +5,13 @@ import { Action, Reducer } from "../store";
 export enum SettingsActionType {
   INIT,
   VALUE_CHANGE,
+  RELOAD_SETTINGS,
   SUCCESS
 }
 
 export interface SettingsAction extends Action<SettingsState> {
   type: SettingsActionType;
-  payload?: { change?: { [key: string]: any } };
+  payload?: { change?: { [key: string]: any }, settings?: SettingsState };
 }
 
 export const changeSettingValue = (
@@ -32,6 +33,8 @@ const createSettingsReducer = (initialSettings: SettingsState): Reducer<Settings
     switch (action.type) {
       case SettingsActionType.VALUE_CHANGE:
         return changeSettingValue(prevState, action);
+      case SettingsActionType.RELOAD_SETTINGS:
+          return action.payload.settings
       default:
         return { ...prevState };
     }

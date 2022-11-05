@@ -17,6 +17,11 @@ const getUrlSettings = (settings: string): SettingsState => {
   return unidecode(settings) as SettingsState
 }
 
+export const showAdvanced = (): boolean => {
+  let location = document.location.href
+  let params = (new URL(location)).searchParams;
+  return params.get('advanced') === "true";
+}
 
 export const getInitialConfigObj = (): SettingsState => {
   let location = document.location.href

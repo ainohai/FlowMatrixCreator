@@ -7,7 +7,7 @@ import {
 import * as p5 from 'p5';
 import { MagnetPoint } from '../entities/MagnetPoint';
 import { AgentType, GridType, Rgb } from '../entities/entityTypes';
-import { CanvasSettings, SettingsState } from '../settingTypes';
+import { AgentDrawingMode, CanvasSettings, SettingsState } from '../settingTypes';
 
 export const renderer = function(p5: p5, settings: () => SettingsState) {
   let drawingGenerator: Generator<void, void, unknown>;
@@ -39,12 +39,12 @@ export const renderer = function(p5: p5, settings: () => SettingsState) {
     return val.done;
   }
 
-  const agents = function(agents: AgentType[], canvas: CanvasSettings, fading: number) {
+  const agents = function(agents: AgentType[], canvas: CanvasSettings, fading: number, drawingModes:AgentDrawingMode) {
     //Fades also grid
     p5.background(canvas.color.r, canvas.color.g, canvas.color.b, fading);
 
     for (let movingAgent of agents) {
-      drawAgent(movingAgent, p5, canvas);
+      drawAgent(movingAgent, p5, canvas, drawingModes);
     }
   }
 

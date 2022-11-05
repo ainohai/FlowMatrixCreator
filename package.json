@@ -26,6 +26,7 @@
     "jest": "^27.5.1",
     "milligram": "^1.4.1",
     "msgpack-lite": "^0.1.26",
+    "preact-cli": "^3.4.1",
     "prettier": "^2.4.1",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.4.1",
@@ -41,7 +42,9 @@
     "hex-rgb": "^5.0.0",
     "htm": "^3.1.1",
     "p5": "^1.4.0",
-    "preact": "^10.11.2",
+    "preact": "^10.0.5",
+    "preact-render-to-string": "^5.0.6",
+    "preact-router": "^3.0.1",
     "rxjs": "^7.5.7"
   },
   "jest": {

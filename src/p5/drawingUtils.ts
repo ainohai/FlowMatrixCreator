@@ -2,7 +2,7 @@ import * as p5 from 'p5';
 import { getLocationOfCell } from '../utils/gridUtil';
 import { MagnetPoint } from '../entities/MagnetPoint';
 import { AgentType, GridType, Rgb } from '../entities/entityTypes';
-import { CanvasSettings } from '../settingTypes';
+import { AgentDrawingMode, AgentDrawingModeType, CanvasSettings } from '../settingTypes';
 
 export const rgbToP5Color = (p5: p5, color: Rgb, opacity?: number) => {
   return opacity
@@ -22,18 +22,18 @@ export const drawHelpGrid = (p5: p5, canvas: CanvasSettings, helperGridSize: num
   }
 };
 
-export const drawAgent = (agent: AgentType, p5: p5, canvas: CanvasSettings) => {
+export const drawAgent = (agent: AgentType, p5: p5, canvas: CanvasSettings, agentDrawingModes: AgentDrawingMode) => {
   const color =
     typeof agent.color === 'function'
       ? agent.color(agent, canvas)
       : agent.color;
 
-  const p5Color = rgbToP5Color(p5, color, undefined);    
+  const p5Color = rgbToP5Color(p5, color, undefined);   
   p5.stroke(p5Color);
   p5.fill(p5Color);
   p5.strokeWeight(agent.strokeWidth);
   //draws occasional circles
-  if (p5.random(1) > 0.99) {
+  if (p5.random(1) < agentDrawingModes[AgentDrawingModeType.CIRCLE]?.percentage / 100 ?? 0.01) {
     p5.circle(agent.position.x, agent.position.y, p5.random(1, 10));
   } else {
     p5.strokeCap(p5.SQUARE);
