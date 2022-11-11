@@ -10,11 +10,12 @@ import {
   getSinks,
   MagnetPoint,
 } from '../../entities/MagnetPoint';
-import { DrawingAction, DrawingReducer, DrawingState } from './drawingStateReducer';
+import { DrawingState } from './drawingStateReducer';
 import { AgentType } from '../../entities/entityTypes';
 import { CanvasSettings, SettingsState, StateOfArt } from '../../settingTypes';
 import { calculateForces } from '../../utils/gridUtil';
-import { Reducer } from '../store';
+import { DrawingAction } from '../actionCreators/DrawingActions';
+import produce from "immer"
 
 
 const getCurrentAgents = (

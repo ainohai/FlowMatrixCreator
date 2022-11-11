@@ -1,5 +1,21 @@
-import { AgentDrawingMode, AgentDrawingModeType, NumberConfig, SettingsState, StateOfArt } from './settingTypes';
+import { AgentDrawingMode, AgentDrawingModeType, Comparator, NumberConfig, Recipe, SettingsState, StateOfArt } from './settingTypes';
+import { valueChangeAction } from './stateHandling/actionCreators/settingActions';
 import { getScheme } from './utils/colorUtil';
+
+export const recipes : Recipe[] = [//];
+  {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 9}],
+   action: valueChangeAction("COLOR_PALETTE", getScheme())},
+   {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 10}],
+   action: valueChangeAction("MAXIMUM_VELOCITY",50)},
+   {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 10}],
+   action: valueChangeAction("DEFAULT_LIFESPAN",50)},
+   {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 11}],
+   action: valueChangeAction("NUM_OF_MAGNETS",12)},
+   {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 41}],
+   action: valueChangeAction("COLOR_PALETTE", getScheme())},
+   {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 51}],
+   action: valueChangeAction("NUM_OF_MAGNETS",2)}
+];
 
 //default configurations
 export const config: SettingsState = {
@@ -41,7 +57,7 @@ export const config: SettingsState = {
   MAGNET_FORCE_MULTIPLIER: 10.0,
 
   MAX_STROKE: 5,
-  DEFAULT_LIFESPAN: 5,
+  DEFAULT_LIFESPAN: 2,
   MAXIMUM_VELOCITY: 5.0,
   MAXIMUM_ACC: 1.0,
   ADD_TO_OLD_VELOCITY: true,

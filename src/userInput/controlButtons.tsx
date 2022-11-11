@@ -39,7 +39,7 @@ function ControlButtons ({}: ControlProps) {
           }
         </div>
         <FinishedInfo stateOfArt={stateOfArt}/>
-        {buttonConfig.showAdvanced && 
+        {buttonConfig.showAdvanced &&  
         <AdvancedSettings/>
         }
       </div>

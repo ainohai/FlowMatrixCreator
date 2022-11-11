@@ -1,27 +1,17 @@
 import { SettingsState } from "../../settingTypes";
-import { getInitialConfigObj } from "../../utils/parseUrl";
-import { Action, Reducer } from "../store";
+import { SettingsAction, SettingsActionType } from "../actionCreators/settingActions";
+import { Reducer } from "../store";
+import produce from "immer";
 
-export enum SettingsActionType {
-  INIT,
-  VALUE_CHANGE,
-  RELOAD_SETTINGS,
-  SUCCESS
-}
-
-export interface SettingsAction extends Action<SettingsState> {
-  type: SettingsActionType;
-  payload?: { change?: { [key: string]: any }, settings?: SettingsState };
-}
 
 export const changeSettingValue = (
   previousState: SettingsState,
   action: SettingsAction
 ): SettingsState =>
-({
-  ...previousState,
-  ...action.payload.change
-});
+(produce(previousState, state => {
+  const {change} = action.payload;
+  Object.assign(state, change )
+}));
 
 const createSettingsReducer = (initialSettings: SettingsState): Reducer<SettingsState> => {
 
@@ -34,7 +24,7 @@ const createSettingsReducer = (initialSettings: SettingsState): Reducer<Settings
       case SettingsActionType.VALUE_CHANGE:
         return changeSettingValue(prevState, action);
       case SettingsActionType.RELOAD_SETTINGS:
-          return action.payload.settings
+          return produce(prevState, () => {return action.payload.settings})
       default:
         return { ...prevState };
     }

@@ -41,6 +41,7 @@
     "dat.gui": "^0.7.9",
     "hex-rgb": "^5.0.0",
     "htm": "^3.1.1",
+    "immer": "^9.0.16",
     "p5": "^1.4.0",
     "preact": "^10.0.5",
     "preact-render-to-string": "^5.0.6",

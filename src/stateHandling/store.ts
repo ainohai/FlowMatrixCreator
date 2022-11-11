@@ -1,7 +1,5 @@
-import { from, Observable, Subject } from "rxjs";
-import { scan, share, tap } from "rxjs/operators";
-import { SettingsState } from "../settingTypes";
-import { DrawingAction, DrawingActionType } from "./reducers/drawingStateReducer";
+import { Observable, Subject } from "rxjs";
+import { scan } from "rxjs/operators";
 
 //TODO: Store related types need overall fixing 
 

@@ -1,12 +1,14 @@
 import * as p5 from 'p5';
 import { renderer } from './renderer';
-import { DrawingActionType, DrawingState, Payload } from '../stateHandling/reducers/drawingStateReducer';
+import { DrawingState } from '../stateHandling/reducers/drawingStateReducer';
 import settingsStore, { getInitialSettings } from '../stateHandling/storeCreators/settingsStore';
 import { map, take } from 'rxjs';
 import { SettingsState, StateOfArt } from '../settingTypes';
 import drawingStore from '../stateHandling/storeCreators/drawingStore';
 import { subscribeToStateOfArtIndex } from '../stateHandling/subscriptions';
+import { DrawingActionType, Payload } from '../stateHandling/actionCreators/DrawingActions';
 
+const frames = [];
 
 /**TODO:
  * 1. FIX: When agent is created to max value, grid point is not found when agent is moved => error.
@@ -87,6 +89,7 @@ const sketch = function (p5: p5) {
     const drawingState = drawing;
     renderSettings = settings;
     render.canvas(drawingState.canvas);
+    p5.frameRate(60)
     drawingStore().dispatch({ type: DrawingActionType.SETUP_DRAW })
   };
 
@@ -96,6 +99,11 @@ const sketch = function (p5: p5) {
     renderSettings = settings;
     let payload = renderState(drawingState)
 
+    frames.push(p5.frameRate())
+    if (p5.frameCount % 60 === 0) {
+
+    console.log(`frame: ${frames.reduce((acc, curr)=> acc + curr, 0) / frames.length}`);
+    }
     drawingStore().dispatch({ type: DrawingActionType.SETUP_DRAW, payload: payload })
   };
 };

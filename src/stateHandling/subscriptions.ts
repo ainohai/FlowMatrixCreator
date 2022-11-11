@@ -1,4 +1,4 @@
-import { combineLatest, map, Observable, Subscription } from "rxjs";
+import { combineLatest, distinctUntilChanged, map, Observable, startWith, Subscription } from "rxjs";
 import { Rgb } from "../entities/entityTypes";
 import { MagnetPoint } from "../entities/MagnetPoint";
 import { SettingsState, StateOfArt } from "../settingTypes";
@@ -14,8 +14,13 @@ export type ButtonConfs = {
 }
 
 //Todo: Performance improvements. This is doing quite a lot of extra unneeded stuff. Check also preact rendering as it can be reduced. 
-const stateOfArtIndex$: () => Observable<number> = () => drawingStore().state$.pipe(map((state: DrawingState) => state.stateIndex));
-const usedStates$: () => Observable<StateOfArt[]> = () => settingsStore().state$.pipe(map((state: SettingsState) => state.USED_STATES));
+const stateOfArtIndex$: () => Observable<number> = () => 
+drawingStore().state$.pipe(
+    map((state: DrawingState) => state.stateIndex),
+    startWith(0),
+    distinctUntilChanged());
+
+    
 const palette$: () => Observable<Rgb[]> = () => settingsStore().state$.pipe(map((state: SettingsState) => state.COLOR_PALETTE));
 const showButtons$: () => Observable<ButtonConfs> = () => settingsStore().state$.pipe(map((state: SettingsState) => ({showControls: state.SHOW_CONTROLS, showButtons: state.SHOW_BUTTONS, showAdvanced:showAdvanced()})));
 
@@ -35,11 +40,6 @@ export const subscribeToButtonConfs = (nextFn:(value: ButtonConfs) => void): Sub
     return onEmit<ButtonConfs>(showButtons$(), nextFn)
 }
 
-
-export const subscribeToDrawingState = (nextFn:(value: DrawingState) => void): Subscription => {
-    return onEmit<DrawingState>(drawingStore().state$, nextFn)
-}
-
 export const subscribeToMagnets = (nextFn:(value: MagnetPoint[]) => void): Subscription => {
     return onEmit<MagnetPoint[]>(drawingStore().state$.pipe(map((state: DrawingState) => JSON.parse(JSON.stringify(state.magnets)))), nextFn)
 }
@@ -48,6 +48,4 @@ export const subscribeToStateOfArtIndex = (nextFn:(value: number) => void): Subs
     return onEmit<number>(stateOfArtIndex$(), nextFn)
 }
 
-export const subscribeUsedStateOfArt = (nextFn:(value: StateOfArt[]) => void): Subscription => {
-    return onEmit<StateOfArt[]>(usedStates$(), nextFn)
-}
+

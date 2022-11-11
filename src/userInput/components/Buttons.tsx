@@ -1,7 +1,8 @@
 import { h } from 'htm/preact';
 import { Fragment } from 'preact';
 import { StateOfArt } from '../../settingTypes';
-import { DrawingActionType, DrawingState } from '../../stateHandling/reducers/drawingStateReducer';
+import { DrawingActionType } from '../../stateHandling/actionCreators/DrawingActions';
+import { DrawingState } from '../../stateHandling/reducers/drawingStateReducer';
 import { UserActionState, UserActionType } from '../../stateHandling/reducers/userActionReducer';
 import { Dispatch } from '../../stateHandling/store';
 import { useStateOfArt } from '../hooks/useStateOfArt';

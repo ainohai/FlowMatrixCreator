@@ -1,11 +1,11 @@
 import { MagnetPoint } from "../../entities/MagnetPoint";
 import { changeStateIndex, initialState, resetMagnets, setupNextRender } from "./drawingStateUtil";
-import { config } from "../../config";
-import { AgentType, GridType, Rgb } from "../../entities/entityTypes";
-import { CanvasSettings, SettingsState, StateOfArt } from "../../settingTypes";
-import { State, Reducer, Action } from "../store";
+import { AgentType, GridType } from "../../entities/entityTypes";
+import { CanvasSettings, SettingsState } from "../../settingTypes";
+import { State, Reducer } from "../store";
 import { subscribeToSettings } from "../subscriptions";
-
+import { DrawingAction, DrawingActionType } from "../actionCreators/DrawingActions";
+import produce from "immer"
 
 export interface DrawingState extends State {
   grid: GridType;
@@ -16,8 +16,6 @@ export interface DrawingState extends State {
   nextAgentBurst: number;
 };
 
-//TODO: Fix action types
-export type Payload = {phaseDone? : boolean, jumpToStage?: StateOfArt};
 
 export interface DrawingReducer extends Reducer<DrawingState> {(
   previousState: DrawingState,
@@ -25,19 +23,6 @@ export interface DrawingReducer extends Reducer<DrawingState> {(
   settings: SettingsState
   ) : DrawingState;
 }
-
-export enum DrawingActionType {
-    INIT,
-    READY_RENDER,
-    SETUP_DRAW,
-    JUMP_TO_INDEX,
-    RESET_MAGNETS
-}
-
-export interface DrawingAction extends Action<DrawingState> {
-    type: DrawingActionType;
-    payload?: Payload;
- }
 
 const init = (initialSettings: SettingsState) => {
   return initialState({

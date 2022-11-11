@@ -8,7 +8,6 @@ export type UrlState = {
     urlCreated: string;
     showButtons: boolean;
     showConfigs: boolean;
-    showAdvanced: boolean;
     settings: SettingsState;
 };
 

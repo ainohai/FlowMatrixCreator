@@ -1,7 +1,8 @@
 import { filter, map, Observable, tap } from "rxjs";
 import { SettingsState } from "../../settingTypes";
-import { DrawingActionType } from "../reducers/drawingStateReducer";
-import { SettingsAction, SettingsActionType } from "../reducers/settingsReducer";
+import { DrawingActionType } from "../actionCreators/DrawingActions";
+import { SettingsAction, SettingsActionType } from "../actionCreators/settingActions";
+
 import { Epic } from "../store";
 import drawingStore from "../storeCreators/drawingStore";
 

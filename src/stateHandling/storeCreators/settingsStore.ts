@@ -1,4 +1,5 @@
-import { SettingsState } from "../../settingTypes";
+import { recipes } from "../../config";
+import { Recipe, SettingsState } from "../../settingTypes";
 import { getInitialConfigObj } from "../../utils/parseUrl";
 import { recalculateMagnets } from "../epics/recalculateMagnets";
 import createSettingsReducer from "../reducers/settingsReducer";
@@ -33,6 +34,10 @@ export function getInitialSettings(): SettingsState {
         createInitialSettings();
     }
     return initialSettings;
+}
+
+export function getRecipes(): Recipe[] {
+    return recipes;
 }
 
 export default settingsStore

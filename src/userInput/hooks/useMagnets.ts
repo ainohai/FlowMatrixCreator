@@ -15,7 +15,7 @@ export function useMagnets(): [MagnetsState, StateUpdater<MagnetsState>] {
 
   useEffect(() => {
     const subscriptions: Subscription[] = [
-      subscribeToMagnets(magnets => { setState(state => ({ ...state, ...{ magnets: [...magnets] } })) })
+      subscribeToMagnets(magnets => { setState(state => {return { ...state, ...{ magnets: [...magnets] } }}) })
     ];
 
     return () => { console.log("cleared"); subscriptions.map(it => it.unsubscribe()) };

@@ -67,7 +67,7 @@ export const colorByVelocity = (
     Math.floor(mapToBoundaries(acc, 0, settings.MAXIMUM_ACC, 0, settings.COLOR_PALETTE.length - 1)) %
     settings.COLOR_PALETTE.length;
 
-  const color = settings.COLOR_PALETTE[index]
+  const color = {...settings.COLOR_PALETTE[index]}
   color.opacity = color.opacity;
 
   if (acc !== 0) {

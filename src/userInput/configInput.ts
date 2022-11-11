@@ -1,8 +1,8 @@
 import * as dat from "dat.gui";
-import { SettingsActionType } from "../stateHandling/reducers/settingsReducer";
 import settingsStore from "../stateHandling/storeCreators/settingsStore";
 import { getScheme } from "../utils/colorUtil";
 import { SettingsState } from "../settingTypes";
+import { SettingsActionType, valueChangeAction } from "../stateHandling/actionCreators/settingActions";
 
 
 const createInitialUISettings = (settings: SettingsState) => {
@@ -38,21 +38,14 @@ const paletteUpdateObj = {
         let scheme = getScheme();
         UIsettings.COLOR_PALETTE = scheme;
         settingsStore().dispatch(
-            {
-                type: SettingsActionType.VALUE_CHANGE,
-                payload: { change: {COLOR_PALETTE: scheme} }
-            })
-        }
+            valueChangeAction("COLOR_PALETTE", scheme)
+            )}
 };
 
 const addListener = (guiC: dat.GUIController, key: string) => {
     return guiC.onFinishChange((value: any) => {
         console.log(value); 
-        settingsStore().dispatch(
-        {
-            type: SettingsActionType.VALUE_CHANGE,
-            payload: { change: {[key]: value}}
-        })
+        settingsStore().dispatch(valueChangeAction(key as keyof SettingsState, value))
     })
 }
 
