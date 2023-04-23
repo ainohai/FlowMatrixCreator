@@ -39,8 +39,8 @@ export const config: SettingsState = {
   CANVAS_WIDTH: window.innerWidth,
   CANVAS_HEIGHT: window.innerHeight,
 
-  SHOW_CONTROLS: true,
-  SHOW_BUTTONS: true,
+  SHOW_CONTROLS: false,
+  SHOW_BUTTONS: false,
 
   TOTAL_BURSTS: 100,
   BURST_SIZE: 200,

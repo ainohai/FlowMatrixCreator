@@ -21,7 +21,6 @@ export function CreateUrl({ }: CreateUrlProps) {
     }
 
     const createHashUrl = () => {
-        //const state: SettingsState = { ...settingsStore.last(), ...{ SHOW_BUTTONS: this.state.showButtons, SHOW_CONTROLS: this.state.showConfigs } }
         const encodedState = uniencode(combinedSettings())
         let url = location.host;
 

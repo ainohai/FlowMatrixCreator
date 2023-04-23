@@ -8,8 +8,6 @@ export enum SettingsActionType {
     SUCCESS
 }
 
-//{ change?: { [key: string]: any }, settings?: SettingsState }
-
 export interface SettingsAction extends Action<SettingsState> {
     type: SettingsActionType;
     payload?: any;

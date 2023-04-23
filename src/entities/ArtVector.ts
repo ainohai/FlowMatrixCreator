@@ -1,5 +1,4 @@
 import { Vector2 } from "@daign/math";
-import { max } from "rxjs";
 
 const limitVector = (vector: Vector2, maxValue): Vector2 => {
   

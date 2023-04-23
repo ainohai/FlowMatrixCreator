@@ -17,6 +17,7 @@ const triggerApplies = (trigger: Trigger, prev: DrawingState, drawingState: Draw
     return drawingState[trigger.drawingKey] < trigger.value;
   }
   else if (trigger.comparator === Comparator.CHANGED) {
+
     return prev[trigger.drawingKey] !== drawingState[trigger.drawingKey] && drawingState[trigger.drawingKey] === trigger.value;
   }
   return false;
