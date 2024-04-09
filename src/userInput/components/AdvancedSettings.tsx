@@ -54,7 +54,6 @@ export function AdvancedSettings({ }: AdvancedSettingsProps) {
     }
 
     const onInput = (value: any, key: string) => {
-        console.log({ [key]: value })
         setUserSettings({ ...userSettings, ...{ [key]: value } })
         console.dir(userSettings)
     }
@@ -87,44 +86,8 @@ export function AdvancedSettings({ }: AdvancedSettingsProps) {
                     })};
 
                     {<div style={{ position: "fixed", left:"50%", bottom:0}}><Button title={"Save changes"} onClick={() => { setSettings(typedSettingsToSettingsState(JSON.stringify(userSettings))) }}></Button></div>}
-                    <CreateUrl />
+                    {/**<CreateUrl /> Hiding for security reasons**/}
                 </div>
             }
         </div>)
 }
-
-/*
-<pre>
-                <textarea style={{ whiteSpace: "pre-wrap", height: "200px" }} value={JSON.stringify(userSettings)} onInput={(e) => onInput(e, settingKey.name)} id="commentField"></textarea>
-            </pre>
-Array(12) [ "003ac9", "002379", "e6edff", "6692ff", "ff5f00", "993900", "ffefe6", "ff9f66", "ffc900", "997900", … ]
-​
-0: "003ac9"
-​
-1: "002379"
-​
-2: "e6edff"
-​
-3: "6692ff"
-​
-4: "ff5f00"
-​
-5: "993900"
-​
-6: "ffefe6"
-​
-7: "ff9f66"
-​
-8: "ffc900"
-​
-9: "997900"
-​
-10: "fffae6"
-​
-11: "ffdf66"
-​
-length: 12
-​
-<prototype>: Array []
-colorUtil.ts:22:10
-*/

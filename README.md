@@ -1,7 +1,6 @@
 # FlowMatrixCreator
 
-I have been toying with creating generative art and I have a need for toolset for using some general generative art concepts. 
-So, this is a WIP project and a starting point for that. There is still long way to go to get to the goal. This is also a starter for a bigger personal art project "Madonna of Machines". 
+This is a generative art project combining flow fields and magnets. 
 
 ## Current features
 - Sets random "magnets" on the canvas.

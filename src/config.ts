@@ -2,8 +2,8 @@ import { AgentDrawingMode, AgentDrawingModeType, Comparator, NumberConfig, Recip
 import { valueChangeAction } from './stateHandling/actionCreators/settingActions';
 import { getScheme } from './utils/colorUtil';
 
-export const recipes : Recipe[] = [//];
-  {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 9}],
+export const recipes : Recipe[] = [];
+/*  {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 9}],
    action: valueChangeAction("COLOR_PALETTE", getScheme())},
    {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 10}],
    action: valueChangeAction("MAXIMUM_VELOCITY",50)},
@@ -15,7 +15,7 @@ export const recipes : Recipe[] = [//];
    action: valueChangeAction("COLOR_PALETTE", getScheme())},
    {triggers: [{drawingKey: "nextAgentBurst", comparator: Comparator.CHANGED, value: 51}],
    action: valueChangeAction("NUM_OF_MAGNETS",2)}
-];
+];*/
 
 //default configurations
 export const config: SettingsState = {
@@ -39,8 +39,8 @@ export const config: SettingsState = {
   CANVAS_WIDTH: window.innerWidth,
   CANVAS_HEIGHT: window.innerHeight,
 
-  SHOW_CONTROLS: false,
-  SHOW_BUTTONS: false,
+  SHOW_CONTROLS: true,
+  SHOW_BUTTONS: true,
 
   TOTAL_BURSTS: 100,
   BURST_SIZE: 200,
@@ -56,7 +56,7 @@ export const config: SettingsState = {
   //Multiplier constant. Similar to G in gravity calculations.
   MAGNET_FORCE_MULTIPLIER: 10.0,
 
-  MAX_STROKE: 5,
+  MAX_STROKE: 15,
   DEFAULT_LIFESPAN: 2,
   MAXIMUM_VELOCITY: 5.0,
   MAXIMUM_ACC: 1.0,
